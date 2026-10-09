@@ -5,7 +5,7 @@
 // today's shoreline. Outside the 4 km box the DEM is extended: flat along the coast, descending
 // on the shelf seaward and rising inland, so the horizon makes sense at any sea level.
 import * as THREE from "three";
-import type { Coastline, Dem } from "./data";
+import { asset, type Coastline, type Dem } from "./data";
 
 export const SEGMENTS = 16;
 
@@ -110,7 +110,7 @@ export async function createGround(dem: Dem, coast: Coastline): Promise<Ground> 
   demTex.magFilter = THREE.LinearFilter;
   demTex.wrapS = demTex.wrapT = THREE.ClampToEdgeWrapping;
   demTex.needsUpdate = true;
-  const shore = await loadPixels("textures/shore.png");
+  const shore = await loadPixels(asset("textures/shore.png"));
 
   // Seaward normal: perpendicular to the coast axis, on the side where the DEM is lower.
   const [ax, an] = coast.axis;

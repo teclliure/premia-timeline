@@ -3,7 +3,7 @@
 // ground.ts), colour from the orthophotos of the two eras around the current year.
 import * as THREE from "three";
 import { GROUND_GLSL, type Ground } from "./ground";
-import type { Manifest } from "./data";
+import { asset, type Manifest } from "./data";
 
 const TILES = 8;
 const LODS = [128, 64, 32, 16];
@@ -48,7 +48,7 @@ function tileGeometry(size: number, seg: number): THREE.BufferGeometry {
 }
 
 function loadTex(url: string, srgb = true): Promise<THREE.Texture> {
-  return new Promise((resolve, reject) => new THREE.TextureLoader().load(url, t => {
+  return new Promise((resolve, reject) => new THREE.TextureLoader().load(asset(url), t => {
     t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;
     t.anisotropy = 8;
     t.flipY = false;

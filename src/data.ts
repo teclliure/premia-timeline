@@ -47,13 +47,17 @@ export interface GalleryItem {
 /** Tree records: x, n, z, height, kind (0 tree, 1 orchard, 2 vine), from, until. */
 export interface Trees { data: Float32Array; count: number }
 
+declare const __BUILD__: string;
+/** URL of a file in public/, versioned per build. */
+export const asset = (path: string): string => `${path}${path.includes("?") ? "&" : "?"}v=${__BUILD__}`;
+
 const json = async <T>(path: string): Promise<T> => {
-  const r = await fetch(path);
+  const r = await fetch(asset(path));
   if (!r.ok) throw new Error(`${path}: ${r.status}`);
   return r.json() as Promise<T>;
 };
 const bin = async (path: string): Promise<ArrayBuffer> => {
-  const r = await fetch(path);
+  const r = await fetch(asset(path));
   if (!r.ok) throw new Error(`${path}: ${r.status}`);
   return r.arrayBuffer();
 };
