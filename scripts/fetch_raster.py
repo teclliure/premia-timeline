@@ -14,6 +14,7 @@ GetCapabilities, so a renamed layer shows up in `list` instead of failing silent
 """
 import io
 import json
+import re
 import sys
 
 import numpy as np
@@ -35,7 +36,8 @@ def capabilities(url: str) -> list[tuple[str, str]]:
     try:
         r = S.get(url, params={"SERVICE": "WMS", "REQUEST": "GetCapabilities"}, timeout=60)
         r.raise_for_status()
-        doc = etree.fromstring(r.content)
+        body = re.sub(rb"<!DOCTYPE[^>]*(\[[^\]]*\])?>", b"", r.content, count=1)
+        doc = etree.fromstring(body, etree.XMLParser(recover=True, resolve_entities=False))
     except Exception as e:  # noqa: BLE001 - report and move on to the next candidate
         print(f"  ! {url}: {e}")
         return []
@@ -47,13 +49,29 @@ def capabilities(url: str) -> list[tuple[str, str]]:
     return out
 
 
+def getmap(url: str, layer: str, bbox: str, w: int, h: int):
+    return S.get(url, params={"SERVICE": "WMS", "VERSION": "1.3.0", "REQUEST": "GetMap", "LAYERS": layer, "STYLES": "",
+                              "CRS": aoi.CRS, "BBOX": bbox, "WIDTH": w, "HEIGHT": h, "FORMAT": "image/jpeg"}, timeout=900)
+
+
 def resolve(era: str) -> tuple[str, str] | None:
-    for url, needles in aoi.ERAS[era]["candidates"]:
-        layers = capabilities(url)
-        for needle in needles:
-            for name, title in layers:
-                if needle.lower() in (name + " " + title).lower():
-                    return url, name
+    """First (endpoint, layer) that returns an image for a small probe of the box."""
+    probe = f"{X0},{Y0},{X0 + 200},{Y0 + 200}"
+    for url, names in aoi.ERAS[era]["candidates"]:
+        tries = list(names)
+        layers = None
+        for name in tries:
+            r = getmap(url, name, probe, 64, 64)
+            if r.headers.get("content-type", "").startswith("image"):
+                return url, name
+            if layers is None:
+                layers = capabilities(url)
+            for lname, title in layers:
+                if name.lower() in (lname + " " + title).lower():
+                    r = getmap(url, lname, probe, 64, 64)
+                    if r.headers.get("content-type", "").startswith("image"):
+                        return url, lname
+        print(f"  {era}: nothing usable at {url}")
     return None
 
 
@@ -66,38 +84,45 @@ def wcs_tiff(url: str, params: dict) -> np.ndarray:
 
 
 def fetch_dem() -> None:
-    # 1) ICGC (MET 2 m / 5 m). The WCS path has changed over the years; we look it up.
     tried = []
-    for url in ("https://geoserveis.icgc.cat/servei/catalunya/mdt/wcs",
-                "https://geoserveis.icgc.cat/icgc_mdt5m/wcs/service"):
+    # 1) ICGC MET 5 m, WCS 1.0.0 (icgc.cat: "WCS of the Digital Terrain Model", coverage icc:met).
+    url = "https://geoserveis.icgc.cat/icc_mdt/wcs/service"
+    for fmt in ("GEOTIFF_FLOAT32", "GeoTIFF", "image/tiff", "GTiff"):
         try:
-            r = S.get(url, params={"SERVICE": "WCS", "VERSION": "2.0.1", "REQUEST": "GetCapabilities"}, timeout=60)
-            ids = [e.text for e in etree.fromstring(r.content).iter("{*}CoverageId")]
-        except Exception as e:  # noqa: BLE001
-            tried.append(f"{url}: {e}")
-            continue
-        pick = next((c for c in ids if "5m" in c.lower()), None) or next((c for c in ids if "2m" in c.lower()), None)
-        if not pick:
-            tried.append(f"{url}: coverages {ids}")
-            continue
-        try:
-            a, raw = wcs_tiff(url, {"SERVICE": "WCS", "VERSION": "2.0.1", "REQUEST": "GetCoverage", "COVERAGEID": pick,
-                                    "SUBSET": [f"x({X0},{X1})", f"y({Y0},{Y1})"], "FORMAT": "image/tiff"})
-            (aoi.RAW / "dem_land.tif").write_bytes(raw)
-            print("dem ICGC", pick, a.shape, float(a.min()), float(a.max()))
-            (aoi.RAW / "dem_source.txt").write_text(f"ICGC {url} {pick}\n")
+            a, raw = wcs_tiff(url, {"SERVICE": "WCS", "VERSION": "1.0.0", "REQUEST": "GetCoverage", "COVERAGE": "icc:met",
+                                    "CRS": aoi.CRS, "RESPONSE_CRS": aoi.CRS, "BBOX": f"{X0},{Y0},{X1},{Y1}",
+                                    "WIDTH": (X1 - X0) // aoi.DEM_CELL, "HEIGHT": (Y1 - Y0) // aoi.DEM_CELL, "FORMAT": fmt})
+            if a.ndim == 3:
+                a = a[..., 0] if a.shape[-1] < a.shape[0] else a[0]
+                tifffile.imwrite(aoi.RAW / "dem_land.tif", a.astype(np.float32))
+            else:
+                (aoi.RAW / "dem_land.tif").write_bytes(raw)
+            print("dem ICGC icc:met", fmt, a.shape, float(np.nanmin(a)), float(np.nanmax(a)))
+            (aoi.RAW / "dem_source.txt").write_text(f"ICGC {url} icc:met {fmt}\n")
             return
         except Exception as e:  # noqa: BLE001
-            tried.append(f"{url} {pick}: {e}")
-    print("ICGC DEM not available, falling back to IGN MDT05:\n  " + "\n  ".join(tried))
-    # 2) IGN MDT05 (the same WCS the Ronda timeline uses, in UTM 31N).
+            tried.append(f"ICGC {fmt}: {str(e)[:200]}")
+    # 2) IGN MDT05 through the IDEE WCS. The coverage id for UTM 31N is looked up in GetCapabilities.
     url = "https://servicios.idee.es/wcs-inspire/mdt"
-    a, raw = wcs_tiff(url, {"SERVICE": "WCS", "VERSION": "2.0.1", "REQUEST": "GetCoverage",
-                            "COVERAGEID": "Elevacion25831_5", "SUBSET": [f"x({X0},{X1})", f"y({Y0},{Y1})"],
-                            "FORMAT": "image/tiff"})
-    (aoi.RAW / "dem_land.tif").write_bytes(raw)
-    (aoi.RAW / "dem_source.txt").write_text(f"IGN {url} Elevacion25831_5\n")
-    print("dem IGN", a.shape, float(a.min()), float(a.max()))
+    try:
+        caps = S.get(url, params={"SERVICE": "WCS", "VERSION": "2.0.1", "REQUEST": "GetCapabilities"}, timeout=120).text
+        ids = re.findall(r"<(?:wcs:)?CoverageId>([^<]+)<", caps)
+    except Exception as e:  # noqa: BLE001
+        ids = []
+        tried.append(f"IGN capabilities: {e}")
+    print("IGN coverages:", ids)
+    order = sorted(ids, key=lambda c: (("25831" not in c), ("_5" not in c and "05" not in c), c))
+    for cov in order[:6]:
+        try:
+            a, raw = wcs_tiff(url, {"SERVICE": "WCS", "VERSION": "2.0.1", "REQUEST": "GetCoverage", "COVERAGEID": cov,
+                                    "SUBSET": [f"x({X0},{X1})", f"y({Y0},{Y1})"], "FORMAT": "image/tiff"})
+            (aoi.RAW / "dem_land.tif").write_bytes(raw)
+            (aoi.RAW / "dem_source.txt").write_text(f"IGN {url} {cov}\n")
+            print("dem IGN", cov, a.shape, float(a.min()), float(a.max()))
+            return
+        except Exception as e:  # noqa: BLE001
+            tried.append(f"IGN {cov}: {str(e)[:200]}")
+    raise SystemExit("no DEM source worked:\n  " + "\n  ".join(tried))
 
 
 def fetch_bathy() -> None:
@@ -122,13 +147,11 @@ def fetch_orthos() -> None:
     for era, spec in aoi.ERAS.items():
         hit = resolve(era)
         if not hit:
-            print(f"{era}: no layer found — run `list` and add the right name to scripts/aoi.py")
+            print(f"{era}: no layer found — run `list` and fix scripts/aoi.py")
             continue
         url, layer = hit
         px = spec["px"]
-        r = S.get(url, params={"SERVICE": "WMS", "VERSION": "1.3.0", "REQUEST": "GetMap", "LAYERS": layer, "STYLES": "",
-                               "CRS": aoi.CRS, "BBOX": f"{X0},{Y0},{X1},{Y1}", "WIDTH": px, "HEIGHT": px,
-                               "FORMAT": "image/jpeg"}, timeout=900)
+        r = getmap(url, layer, f"{X0},{Y0},{X1},{Y1}", px, px)
         ct = r.headers.get("content-type", "")
         print(era, layer, r.status_code, ct, len(r.content))
         if ct.startswith("image"):
@@ -137,6 +160,8 @@ def fetch_orthos() -> None:
         else:
             print(r.text[:400])
     (aoi.RAW / "ortho_sources.json").write_text(json.dumps(sources, indent=1))
+    if "now" not in sources or not any(k in sources for k in ("1946", "1956")):
+        raise SystemExit("missing the current or the 1946/1956 orthophoto; see the messages above")
 
 
 if __name__ == "__main__":
