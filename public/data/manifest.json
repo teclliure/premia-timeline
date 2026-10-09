@@ -1,31 +1,69 @@
 {
- "placeholder": true,
+ "placeholder": false,
  "orthos": {
   "1946": {
    "year": 1946,
-   "file": "textures/ortho_1946.webp"
+   "file": "textures/ortho_1946.webp",
+   "source": {
+    "url": "https://geoserveis.icgc.cat/servei/catalunya/orto-territorial/wms",
+    "layer": "ortofoto_blanc_i_negre_1945-1946",
+    "year": 1946
+   }
   },
   "1956": {
    "year": 1956,
-   "file": "textures/ortho_1956.webp"
+   "file": "textures/ortho_1956.webp",
+   "source": {
+    "url": "https://geoserveis.icgc.cat/servei/catalunya/orto-territorial/wms",
+    "layer": "ortofoto_blanc_i_negre_1956-1957",
+    "year": 1956
+   }
   },
   "1980": {
    "year": 1980,
-   "file": "textures/ortho_1980.webp"
+   "file": "textures/ortho_1980.webp",
+   "source": {
+    "url": "https://geoserveis.icgc.cat/servei/catalunya/orto-territorial/wms",
+    "layer": "ortofoto_blanc_i_negre_1983-1989",
+    "year": 1980
+   }
   },
   "1995": {
    "year": 1995,
-   "file": "textures/ortho_1995.webp"
+   "file": "textures/ortho_1995.webp",
+   "source": {
+    "url": "https://geoserveis.icgc.cat/servei/catalunya/orto-territorial/wms",
+    "layer": "ortofoto_blanc_i_negre_1994-1997",
+    "year": 1995
+   }
   },
   "2004": {
    "year": 2004,
-   "file": "textures/ortho_2004.webp"
+   "file": "textures/ortho_2004.webp",
+   "source": {
+    "url": "https://geoserveis.icgc.cat/servei/catalunya/orto-territorial/wms",
+    "layer": "ortofoto_color_2004-2005",
+    "year": 2004
+   }
   },
   "now": {
    "year": 2024,
-   "file": "textures/ortho_now.webp"
+   "file": "textures/ortho_now.webp",
+   "source": {
+    "url": "https://geoserveis.icgc.cat/servei/catalunya/orto-territorial/wms",
+    "layer": "ortofoto_color_vigent",
+    "year": 2024
+   }
   }
  },
- "hires": null,
+ "hires": {
+  "file": "textures/ortho_hires.webp",
+  "box": {
+   "x0": -800,
+   "y0": -1000,
+   "x1": 1200,
+   "y1": 500
+  }
+ },
  "landscape": "textures/landscape.webp"
 }
