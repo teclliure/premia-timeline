@@ -1,1 +1,72 @@
-{}
+{
+ "can_manent": {
+  "title": "161 Can Manent, camí Ral 54 (Premià de Mar)",
+  "author": "Enric",
+  "licence": "CC BY-SA 4.0",
+  "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:161_Can_Manent,_cam%C3%AD_Ral_54_(Premi%C3%A0_de_Mar).jpg",
+  "file": "gallery/place_can_manent.webp",
+  "thumb": "gallery/place_can_manent_t.webp",
+  "year": 2016
+ },
+ "gas": {
+  "title": "141 Antiga Fàbrica del Gas, c. Joan XXIII 2-8 (Premià de Mar)",
+  "author": "Enric",
+  "licence": "CC BY-SA 4.0",
+  "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:141_Antiga_F%C3%A0brica_del_Gas,_c._Joan_XXIII_2-8_(Premi%C3%A0_de_Mar).jpg",
+  "file": "gallery/place_gas.webp",
+  "thumb": "gallery/place_gas_t.webp",
+  "year": 2016
+ },
+ "fabrica_lio": {
+  "title": "068 La Lió, antiga fàbrica Puiggròs (Premià de Mar), façana c. Joan Prim",
+  "author": "Enric",
+  "licence": "CC BY-SA 4.0",
+  "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:068_La_Li%C3%B3,_antiga_f%C3%A0brica_Puiggr%C3%B2s_(Premi%C3%A0_de_Mar),_fa%C3%A7ana_c._Joan_Prim.jpg",
+  "file": "gallery/place_fabrica_lio.webp",
+  "thumb": "gallery/place_fabrica_lio_t.webp",
+  "year": 2016
+ },
+ "can_gravada": {
+  "title": "139 Antic magatzem al c. Gibraltar, 14-20 (Premià de Mar)",
+  "author": "Enric",
+  "licence": "CC BY-SA 4.0",
+  "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:139_Antic_magatzem_al_c._Gibraltar,_14-20_(Premi%C3%A0_de_Mar).jpg",
+  "file": "gallery/place_can_gravada.webp",
+  "thumb": "gallery/place_can_gravada_t.webp",
+  "year": 2016
+ },
+ "church": {
+  "title": "105 Església de Sant Cristòfol (Premià de Mar)",
+  "author": "Enric",
+  "licence": "CC BY-SA 4.0",
+  "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:105_Esgl%C3%A9sia_de_Sant_Crist%C3%B2fol_(Premi%C3%A0_de_Mar).jpg",
+  "file": "gallery/place_church.webp",
+  "thumb": "gallery/place_church_t.webp",
+  "year": 2016
+ },
+ "villa": {
+  "title": "Jaciment roma de Can Farrerons 001",
+  "author": "Friviere",
+  "licence": "CC BY-SA 3.0",
+  "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Jaciment_roma_de_Can_Farrerons_001.jpg",
+  "file": "gallery/place_villa.webp",
+  "thumb": "gallery/place_villa_t.webp",
+  "year": 2015
+ },
+ "port": {
+  "title": "Club Nàutic Premià",
+  "author": "Herodotptlomeu",
+  "licence": "CC BY-SA 4.0",
+  "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source_url": "https://commons.wikimedia.org/wiki/File:Club_N%C3%A0utic_Premi%C3%A0.jpg",
+  "file": "gallery/place_port.webp",
+  "thumb": "gallery/place_port_t.webp",
+  "year": 2022
+ }
+}
