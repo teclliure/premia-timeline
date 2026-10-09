@@ -24,22 +24,35 @@ from PIL import Image
 import aoi
 
 API = "https://commons.wikimedia.org/w/api.php"
-CATEGORIES = ["Category:History of Premià de Mar", "Category:Premià de Mar", "Category:Old photographs of Premià de Mar"]
+ROOT_CATEGORY = "Category:Premià de Mar"
 OK = re.compile(r"^(public domain|pd|cc0|cc by(-sa)? ?[0-9.]*)", re.I)
 S = requests.Session()
+import urllib3.util.connection as _uc  # noqa: E402
+
+_uc.HAS_IPV6 = False
 S.headers["User-Agent"] = "premia-timeline/0.1 (https://github.com/teclliure/premia-timeline)"
 OUT = aoi.PUBLIC / "gallery"
 
 
-def members(cat: str) -> list[str]:
-    files, cont = [], {}
+def members(cat: str, kind: str = "file") -> list[str]:
+    out, cont = [], {}
     while True:
-        r = S.get(API, params={"action": "query", "list": "categorymembers", "cmtitle": cat, "cmtype": "file",
+        r = S.get(API, params={"action": "query", "list": "categorymembers", "cmtitle": cat, "cmtype": kind,
                                "cmlimit": 200, "format": "json", **cont}, timeout=60).json()
-        files += [m["title"] for m in r.get("query", {}).get("categorymembers", [])]
+        out += [m["title"] for m in r.get("query", {}).get("categorymembers", [])]
         if "continue" not in r:
-            return files
+            return out
         cont = r["continue"]
+
+
+def walk(root: str, depth: int = 2) -> list[str]:
+    """Category and its subcategories, `depth` levels down."""
+    seen, level = [root], [root]
+    for _ in range(depth):
+        nxt = [c for cat in level for c in members(cat, "subcat") if c not in seen]
+        seen += nxt
+        level = nxt
+    return seen
 
 
 def info(titles: list[str]) -> list[dict]:
@@ -78,13 +91,23 @@ def save(img: Image.Image, stem: str) -> tuple[str, str]:
 
 def main() -> None:
     cap = int(sys.argv[sys.argv.index("--max") + 1]) if "--max" in sys.argv else 80
-    titles = sorted({t for c in CATEGORIES for t in members(c)})
+    cats = walk(ROOT_CATEGORY)
+    titles = sorted({t for c in cats for t in members(c)})
+    print(len(cats), "categories,", len(titles), "files")
     items = []
+    skipped = {"licence": 0, "no date": 0, "after 1995": 0}
     for f in info(titles):
         meta = f.get("extmetadata", {})
         lic = strip(meta.get("LicenseShortName", {}).get("value", ""))
         year = year_from(meta)
-        if not OK.match(lic) or year is None or year > 1995:
+        if not OK.match(lic):
+            skipped["licence"] += 1
+            continue
+        if year is None:
+            skipped["no date"] += 1
+            continue
+        if year > 1995:
+            skipped["after 1995"] += 1
             continue
         stem = f"commons_{len(items):03d}"
         img = Image.open(io.BytesIO(S.get(f["thumburl"], timeout=120).content)).convert("RGB")
@@ -102,6 +125,7 @@ def main() -> None:
             stem = f"local_{i:03d}"
             file, thumb = save(Image.open(aoi.ROOT / m["file"]).convert("RGB"), stem)
             items.append({**{k: v for k, v in m.items() if k != "file"}, "id": stem, "file": file, "thumb": thumb})
+    print("skipped", skipped)
     items.sort(key=lambda x: x["year"])
     (aoi.DATA / "gallery.json").write_text(json.dumps(items, ensure_ascii=False, indent=1))
     print("gallery", len(items))

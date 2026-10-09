@@ -23,7 +23,7 @@ export interface BuildingData { origin: { x: number; y: number; size: number }; 
 
 export type Pt = [number, number];
 export interface Features {
-  lines: { railway: Pt[][]; n2: Pt[][]; c32: Pt[][]; streets: Pt[][]; breakwater: Pt[][] };
+  lines: { railway: Pt[][]; n2: Pt[][]; c32: Pt[][]; streets: Pt[][]; breakwater: Pt[][]; pier?: Pt[][] };
   areas: { beach: Pt[][]; harbour: Pt[][] };
   pois: Partial<Record<"church" | "church_dalt" | "museu_roma" | "museu_estampacio" | "fabrica_lio" | "vallpremia" | "frigorifics" | "station", Pt>>;
   chimneys: Pt[];

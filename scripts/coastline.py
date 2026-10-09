@@ -26,6 +26,7 @@ import aoi
 
 SEGMENTS = 16
 BAND = 250.0  # metres either side of the shoreline that the offset may touch
+MAX_OFFSET = 60.0  # picks further than this from today are treated as misdetections
 B = aoi.bbox()
 SIZE = B["size"]
 HALF = SIZE / 2
@@ -91,14 +92,27 @@ def main() -> None:
     aoi.TEX.mkdir(parents=True, exist_ok=True)
     Image.fromarray(rgb).resize((1024, 1024), Image.NEAREST).save(aoi.TEX / "shore.png", optimize=True)
 
+    # The edge picker has a bias of its own (sand colour, surf, film): measure today's photo the
+    # same way and subtract it, then drop implausible picks and smooth along the coast.
+    ref = measure("now", signed, along, a0, a1)
     keys = []
     for era, spec in aoi.ERAS.items():
         if era == "now":
             continue
         offs = measure(era, signed, along, a0, a1)
-        if offs:
-            keys.append({"year": spec["year"], "offsets": offs, "kind": "measured"})
-            print(era, offs)
+        if not offs or not ref:
+            continue
+        o = np.array(offs) - np.array(ref)
+        o[np.abs(o) > MAX_OFFSET] = np.nan
+        if np.isnan(o).all():
+            continue
+        idx = np.arange(SEGMENTS)
+        good = ~np.isnan(o)
+        o = np.interp(idx, idx[good], o[good])
+        o = ndimage.median_filter(o, size=3, mode="nearest")
+        o = np.round(ndimage.uniform_filter1d(o, 3, mode="nearest"), 1)
+        keys.append({"year": spec["year"], "offsets": [float(v) for v in o], "kind": "measured"})
+        print(era, "raw", offs, "->", list(o))
     manual_path = aoi.ROOT / "scripts/coastline_manual.json"
     if manual_path.exists():
         manual = json.loads(manual_path.read_text())

@@ -171,6 +171,23 @@ export function createLandmarks(f: Features, ground: Ground): Landmarks {
     return segs;
   });
 
+  // --- marina pontoons (thin, from 1975)
+  const pierMat = lamb(0x8a7f70);
+  const piers = new THREE.Group();
+  for (const line of f.lines.pier ?? []) {
+    const pts = resample(line, 8);
+    for (let i = 0; i + 1 < pts.length; i++) {
+      const a = pts[i], b = pts[i + 1];
+      const l = Math.hypot(b[0] - a[0], b[1] - a[1]);
+      const m = new THREE.Mesh(new THREE.BoxGeometry(l + 0.5, 0.6, 2.5), pierMat);
+      m.position.set((a[0] + b[0]) / 2, 0.6, -(a[1] + b[1]) / 2);
+      m.rotation.y = Math.atan2(b[1] - a[1], b[0] - a[0]);
+      m.receiveShadow = true;
+      piers.add(m);
+    }
+  }
+  group.add(piers);
+
   // --- boats moored in the harbour (from 1975) and pulled up on the beach (1800–1965)
   const hull = new THREE.ConeGeometry(1.1, 6, 6).rotateZ(Math.PI / 2).scale(1, 0.5, 1);
   const harbour = f.areas.harbour[0];
@@ -286,6 +303,7 @@ export function createLandmarks(f: Features, ground: Ground): Landmarks {
       const k = THREE.MathUtils.clamp((year - 1972) / 3, 0, 1);
       for (const segs of breakwaters) for (const s of segs) s.mesh.visible = k > 0 && s.at <= k;
       moored.visible = year >= 1975;
+      piers.visible = year >= 1975;
       beached.visible = year >= 1800 && year < 1965;
       // Church: rising 1798–1820, standing, burned in 1936 (one metre of wall left), rebuilt
       // from 1939 (the end of the rebuilding is not dated; shown over six years).
