@@ -1,0 +1,4 @@
+{
+  "_note": "Optional shoreline offsets in metres per segment (16, SW -> NE), + = beach wider than today. Overrides the automatic pick for that year; years before 1946 can only come from here and are shown as estimates. Example: \"1848\": [15, 15, ...].",
+  "keys": {}
+}

@@ -1,0 +1,31 @@
+{
+ "placeholder": true,
+ "orthos": {
+  "1946": {
+   "year": 1946,
+   "file": "textures/ortho_1946.webp"
+  },
+  "1956": {
+   "year": 1956,
+   "file": "textures/ortho_1956.webp"
+  },
+  "1980": {
+   "year": 1980,
+   "file": "textures/ortho_1980.webp"
+  },
+  "1995": {
+   "year": 1995,
+   "file": "textures/ortho_1995.webp"
+  },
+  "2004": {
+   "year": 2004,
+   "file": "textures/ortho_2004.webp"
+  },
+  "now": {
+   "year": 2024,
+   "file": "textures/ortho_now.webp"
+  }
+ },
+ "hires": null,
+ "landscape": "textures/landscape.webp"
+}
