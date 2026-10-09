@@ -27,6 +27,11 @@ import aoi
 B = aoi.bbox()
 X0, Y0, X1, Y1 = B["bbox"]
 S = requests.Session()
+from requests.adapters import HTTPAdapter  # noqa: E402
+from urllib3.util.retry import Retry  # noqa: E402
+
+S.mount("https://", HTTPAdapter(max_retries=Retry(total=5, connect=5, read=5, backoff_factor=3,
+                                                  status_forcelist=(429, 500, 502, 503, 504), allowed_methods=None)))
 S.headers["User-Agent"] = "premia-timeline/0.1 (https://github.com/teclliure/premia-timeline)"
 print("bbox", B["bbox"], aoi.CRS)
 
@@ -83,25 +88,58 @@ def wcs_tiff(url: str, params: dict) -> np.ndarray:
     return tifffile.imread(io.BytesIO(r.content)).astype(np.float32), r.content
 
 
+def arcgrid(content: bytes) -> np.ndarray:
+    """ESRI ASCII grid (possibly zipped) -> north-up float32 array resampled to the DEM grid of the box."""
+    import zipfile
+
+    from scipy import ndimage
+
+    if content[:2] == b"PK":
+        z = zipfile.ZipFile(io.BytesIO(content))
+        name = next(n for n in z.namelist() if n.lower().endswith((".asc", ".txt", ".grd")))
+        content = z.read(name)
+    text = content.decode("ascii", "replace")
+    if not text.lstrip().lower().startswith("ncols"):
+        raise RuntimeError(text[:300])
+    lines = text.splitlines()
+    head = {}
+    k = 0
+    while k < len(lines) and lines[k].split() and lines[k].split()[0].isalpha():
+        key, val = lines[k].split()[:2]
+        head[key.lower()] = float(val)
+        k += 1
+    data = np.array(" ".join(lines[k:]).split(), dtype=np.float32).reshape(int(head["nrows"]), int(head["ncols"]))
+    data[data == head.get("nodata_value", -9999)] = np.nan
+    cs = head["cellsize"]
+    x0 = head.get("xllcorner", head.get("xllcenter", 0) - cs / 2)
+    y0 = head.get("yllcorner", head.get("yllcenter", 0) - cs / 2)
+    ytop = y0 + data.shape[0] * cs
+    n = (X1 - X0) // aoi.DEM_CELL
+    cell = (X1 - X0) / n
+    xs = X0 + (np.arange(n) + 0.5) * cell
+    ys = Y1 - (np.arange(n) + 0.5) * cell
+    gx, gy = np.meshgrid(xs, ys)
+    col = (gx - x0) / cs - 0.5
+    row = (ytop - gy) / cs - 0.5
+    return ndimage.map_coordinates(np.nan_to_num(data, nan=-1.0), [row, col], order=1, mode="nearest").astype(np.float32)
+
+
 def fetch_dem() -> None:
     tried = []
     # 1) ICGC MET 5 m, WCS 1.0.0 (icgc.cat: "WCS of the Digital Terrain Model", coverage icc:met).
     url = "https://geoserveis.icgc.cat/icc_mdt/wcs/service"
-    for fmt in ("GEOTIFF_FLOAT32", "GeoTIFF", "image/tiff", "GTiff"):
-        try:
-            a, raw = wcs_tiff(url, {"SERVICE": "WCS", "VERSION": "1.0.0", "REQUEST": "GetCoverage", "COVERAGE": "icc:met",
-                                    "CRS": aoi.CRS, "RESPONSE_CRS": aoi.CRS, "BBOX": f"{X0},{Y0},{X1},{Y1}",
-                                    "WIDTH": (X1 - X0) // aoi.DEM_CELL, "HEIGHT": (Y1 - Y0) // aoi.DEM_CELL, "FORMAT": fmt})
-            if a.ndim == 3:
-                a = a[..., 0] if a.shape[-1] < a.shape[0] else a[0]
-                tifffile.imwrite(aoi.RAW / "dem_land.tif", a.astype(np.float32))
-            else:
-                (aoi.RAW / "dem_land.tif").write_bytes(raw)
-            print("dem ICGC icc:met", fmt, a.shape, float(np.nanmin(a)), float(np.nanmax(a)))
-            (aoi.RAW / "dem_source.txt").write_text(f"ICGC {url} icc:met {fmt}\n")
-            return
-        except Exception as e:  # noqa: BLE001
-            tried.append(f"ICGC {fmt}: {str(e)[:200]}")
+    try:
+        r = S.get(url, params={"SERVICE": "WCS", "VERSION": "1.0.0", "REQUEST": "GetCoverage", "COVERAGE": "icc:met",
+                               "CRS": aoi.CRS, "RESPONSE_CRS": aoi.CRS, "BBOX": f"{X0},{Y0},{X1},{Y1}",
+                               "WIDTH": (X1 - X0) // aoi.DEM_CELL, "HEIGHT": (Y1 - Y0) // aoi.DEM_CELL, "FORMAT": "ArcGrid"},
+                  timeout=600)
+        a = arcgrid(r.content)
+        tifffile.imwrite(aoi.RAW / "dem_land.tif", a)
+        print("dem ICGC icc:met ArcGrid", a.shape, float(a.min()), float(a.max()))
+        (aoi.RAW / "dem_source.txt").write_text(f"ICGC {url} icc:met (MET 5 m, ArcGrid)\n")
+        return
+    except Exception as e:  # noqa: BLE001
+        tried.append(f"ICGC ArcGrid: {str(e)[:300]}")
     print("ICGC DEM failed:\n  " + "\n  ".join(tried))
     # 2) IGN MDT05 through the IDEE WCS, in ETRS89 lat/lon (EPSG:4258), reprojected to the UTM 31N
     #    grid here. (The UTM coverages it offers are 30N, which would put the box somewhere else.)
