@@ -25,7 +25,7 @@ export type Pt = [number, number];
 export interface Features {
   lines: { railway: Pt[][]; n2: Pt[][]; c32: Pt[][]; streets: Pt[][]; breakwater: Pt[][]; pier?: Pt[][] };
   areas: { beach: Pt[][]; harbour: Pt[][] };
-  pois: Partial<Record<"church" | "church_dalt" | "museu_roma" | "museu_estampacio" | "fabrica_lio" | "vallpremia" | "frigorifics" | "station", Pt>>;
+  pois: Partial<Record<"church" | "church_dalt" | "museu_roma" | "museu_estampacio" | "fabrica_lio" | "vallpremia" | "frigorifics" | "station" | "can_manent" | "can_gravada" | "carrer_aurora" | "fundacio_crit", Pt>>;
   chimneys: Pt[];
   attribution: string;
 }
@@ -62,6 +62,8 @@ export const loadManifest = () => json<Manifest>("data/manifest.json");
 export const loadBuildings = () => json<BuildingData>("data/buildings.json");
 export const loadFeatures = () => json<Features>("data/features.json");
 export const loadCoastline = () => json<Coastline>("data/coastline.json");
+export interface PlacePhoto { title: string; author: string; licence: string; licence_url?: string; source_url: string; file: string; thumb: string; year?: number | null }
+export const loadPlacePhotos = () => json<Record<string, PlacePhoto>>("data/places.json").catch(() => ({} as Record<string, PlacePhoto>));
 export const loadGallery = () => json<GalleryItem[]>("data/gallery.json").catch(() => [] as GalleryItem[]);
 
 export async function loadDem(): Promise<Dem> {

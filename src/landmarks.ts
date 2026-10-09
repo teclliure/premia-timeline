@@ -7,7 +7,7 @@ import { elevation, type Features, type Pt } from "./data";
 import type { Ground } from "./ground";
 import { t } from "./i18n";
 
-export interface Label { key: string; at: Pt; lift: number; from: number; to: number; text: (year: number) => string; el?: HTMLDivElement }
+export interface Label { key: string; at: Pt; lift: number; from: number; to: number; text: (year: number) => string; place?: string; el?: HTMLElement }
 
 export interface Landmarks {
   group: THREE.Group;
@@ -278,20 +278,61 @@ export function createLandmarks(f: Features, ground: Ground): Landmarks {
   const farm = gableHouse(10, 18, 4.5, 2, 0xcfbf9c, 0xa45c3c);
   if (f.pois.vallpremia) { place(farm, f.pois.vallpremia, -0.3); group.add(farm); }
 
+  // --- Can Manent: masia de tres crugies, documented from 1618 (DIBA 58219). Volume illustrative.
+  const manent = new THREE.Group();
+  if (f.pois.can_manent) {
+    const body = gableHouse(15, 17, 8.5, 3.6, 0xe6dcc6, 0xa2593a);
+    const wing = gableHouse(7, 10, 5, 1.8, 0xe0d4bb, 0xa2593a);
+    wing.position.set(-11, 0, 3);
+    manent.add(body, wing);
+    place(manent, f.pois.can_manent, -0.3, coastAngle + Math.PI / 2);
+    group.add(manent);
+  }
+
+  // --- gas works (La Propagadora del Gas, 1884): three gasometers and a chimney. After 1983 only
+  // the containment structure of one gasometer remains (DIBA 58199).
+  const gas = new THREE.Group();
+  const gasTanks: THREE.Mesh[] = [];
+  let gasFrame: THREE.Mesh | null = null;
+  let gasChimney: THREE.Mesh | null = null;
+  if (f.pois.museu_estampacio) {
+    const tankMat = lamb(0x6f7378);
+    for (let i = 0; i < 3; i++) {
+      const t = new THREE.Mesh(new THREE.CylinderGeometry(8, 8, 11, 20).translate(0, 5.5, 0), tankMat);
+      t.position.set(-24 + i * 18, 0, 22);
+      t.castShadow = true;
+      gasTanks.push(t);
+      gas.add(t);
+    }
+    gasFrame = new THREE.Mesh(new THREE.CylinderGeometry(8.4, 8.4, 12, 20, 1, true).translate(0, 6, 0),
+      new THREE.MeshLambertMaterial({ color: 0x4a4e52, wireframe: true }));
+    gasFrame.position.copy(gasTanks[0].position);
+    gas.add(gasFrame);
+    gasChimney = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 1.5, 26, 10).translate(0, 13, 0), lamb(0x9c5a3f));
+    gasChimney.position.set(14, 0, -6);
+    gasChimney.castShadow = true;
+    gas.add(gasChimney);
+    place(gas, f.pois.museu_estampacio, -0.2, coastAngle);
+    group.add(gas);
+  }
+
   // --- labels
-  const L = (key: string, at: Pt | undefined, lift: number, from: number, to: number, text: (y: number) => string) => {
-    if (at) labels.push({ key, at, lift, from, to, text });
+  const L = (key: string, at: Pt | undefined, lift: number, from: number, to: number, text: (y: number) => string, place?: string) => {
+    if (at) labels.push({ key, at, lift, from, to, text, place });
   };
   if (shoreline.length > 2) L("coast", shoreline[Math.floor(shoreline.length * 0.62)], 25, -1e6, -4500, () => t("label.coast"));
-  L("church", f.pois.church, 40, 1798, 3000, y => (y >= 1936.5 && y < 1939 ? t("label.church.ruin") : t("label.church")));
+  L("church", f.pois.church, 40, 1798, 3000, y => (y >= 1936.5 && y < 1939 ? t("label.church.ruin") : t("label.church")), "church");
+  L("can_manent", f.pois.can_manent, 16, 1618, 3000, () => t("label.can_manent"), "can_manent");
+  L("gas", f.pois.museu_estampacio, 22, 1884.1, 3000, y => (y >= 2002.3 ? t("label.gas.museum") : t("label.gas")), "gas");
+  L("can_gravada", f.pois.can_gravada, 14, 1908, 3000, () => t("label.can_gravada"), "can_gravada");
+  L("aurora", f.pois.carrer_aurora, 10, 1898, 3000, () => t("label.aurora"), "aurora");
   L("church_dalt", f.pois.church_dalt, 30, 1798, 3000, () => t("label.church_dalt"));
   L("station", f.pois.station, 12, 1848.8, 3000, () => t("label.station"));
   if (rail.length) L("railway", pointAt(rail, railLen * 0.72).p, 10, 1848.8, 3000, () => t("label.railway"));
   if (f.lines.n2[0]) L("n2", pointAt(f.lines.n2[0], lineLength(f.lines.n2[0]) * 0.3).p, 8, 1500, 3000, y => (y >= 1950 ? t("label.n2.modern") : t("label.n2")));
   if (f.lines.c32[0]) L("c32", pointAt(f.lines.c32[0], lineLength(f.lines.c32[0]) * 0.55).p, 10, 1969, 3000, () => t("label.c32"));
   if (f.lines.breakwater[0]) L("port", pointAt(f.lines.breakwater[0], lineLength(f.lines.breakwater[0]) * 0.6).p, 12, 1974, 3000, () => t("label.port"));
-  L("fabrica_lio", f.pois.fabrica_lio, 38, 1898, 3000, () => t("label.fabrica_lio"));
-  L("museu_estampacio", f.pois.museu_estampacio, 20, 1979, 3000, () => t("label.museu_estampacio"));
+  L("fabrica_lio", f.pois.fabrica_lio, 38, 1898, 3000, () => t("label.fabrica_lio"), "fabrica_lio");
   L("villa", f.pois.museu_roma, 18, 250, 500, () => t("label.villa"));
   L("museu_roma", f.pois.museu_roma, 18, 2015, 3000, () => t("label.museu_roma"));
   L("vallpremia", f.pois.vallpremia, 14, -100, 100, () => t("label.vallpremia"));
@@ -329,6 +370,12 @@ export function createLandmarks(f: Features, ground: Ground): Landmarks {
       nave.children[1].visible = cap.visible = cs >= 0.999;
       for (const c of chimneys) c.mesh.visible = year >= c.from && year < c.to;
       villa.visible = year >= 250 && year < 500;
+      manent.visible = year >= 1618;
+      const gasOn = year >= 1884.1 && year < 1983;
+      gas.visible = year >= 1884.1;
+      gasTanks.forEach(t => { t.visible = gasOn; });
+      if (gasFrame) gasFrame.visible = year >= 1983;
+      if (gasChimney) gasChimney.visible = year >= 1884.1 && year < 1941;
       farm.visible = year >= -100 && year < 100;
     },
     tick(seconds: number, year: number) {

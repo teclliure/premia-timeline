@@ -125,23 +125,27 @@ def main() -> None:
         "vallpremia": "Vallpremià, Premià de Mar",
         "museu_estampacio": "Carrer de Joan XXIII 2, Premià de Mar",
         "station": "Estació de Premià de Mar",
+        "can_manent": ["Camí Ral 54, Premià de Mar", "Can Manent, Premià de Mar", "Biblioteca Can Manent, Premià de Mar"],  # DIBA 58219
+        "fundacio_crit": "Carrer de Sant Pau 13, Premià de Mar",  # DIBA 58389
     }
-    for key, q in GEOCODE.items():
+    for key, qs in GEOCODE.items():
         if key in pois:
             continue
-        try:
-            res = requests.get("https://nominatim.openstreetmap.org/search", params={"q": q, "format": "json", "limit": 1},
-                               headers=headers, timeout=60).json()
-        except (requests.RequestException, ValueError) as e:
-            print("geocode", key, e)
-            continue
-        time.sleep(1.1)
-        if res:
-            p = local(float(res[0]["lon"]), float(res[0]["lat"]))
-            if abs(p[0]) < B["size"] / 2 and abs(p[1]) < B["size"] / 2:
-                pois[key] = p
-                print("geocoded", key, q, p)
-        else:
+        for q in [qs] if isinstance(qs, str) else qs:
+            try:
+                res = requests.get("https://nominatim.openstreetmap.org/search", params={"q": q, "format": "json", "limit": 1},
+                                   headers=headers, timeout=60).json()
+            except (requests.RequestException, ValueError) as e:
+                print("geocode", key, e)
+                continue
+            finally:
+                time.sleep(1.1)
+            if res:
+                p = local(float(res[0]["lon"]), float(res[0]["lat"]))
+                if abs(p[0]) < B["size"] / 2 and abs(p[1]) < B["size"] / 2:
+                    pois[key] = p
+                    print("geocoded", key, q, p)
+                    break
             print("geocode: nothing for", key, q)
     manual = aoi.ROOT / "scripts/pois_manual.json"
     if manual.exists():

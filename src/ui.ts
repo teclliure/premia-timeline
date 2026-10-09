@@ -14,11 +14,13 @@ export interface UIHandlers {
   onDetail(q: Quality): void;
   onAuto(on: boolean): void;
   onLabels(on: boolean): void;
+  onPlace(id: string): void;
 }
 export type Quality = "low" | "medium" | "high";
 
 export interface YearInfo {
   year: number;
+  places: string[];
   seaLevel: number;
   coastKm: number | null;
   photo: number | null;
@@ -64,6 +66,7 @@ export function createUI(h: UIHandlers, placeholder: boolean): UI {
 <p class="era-text"></p>
 <div class="era-more" hidden></div>
 <div class="facts"></div>
+<div class="places"></div>
 <div class="card-actions">
   <button class="more"></button>
   <button class="close-look">${esc(t("ui.lookClose"))}</button>
@@ -169,6 +172,7 @@ ${ph ? `<p class="warn">${esc(t("notes.placeholder"))}</p>` : ""}
   window.addEventListener("keydown", e => { if (e.key === "Escape") notes.hidden = true; });
 
   let era: Era | null = null;
+  let lastPlaces = "";
   return {
     labelsRoot,
     setYear(info) {
@@ -195,6 +199,13 @@ ${ph ? `<p class="warn">${esc(t("notes.placeholder"))}</p>` : ""}
       if (info.seaLevel < -0.5) facts.push(esc(t("ui.seaLevel", { value: formatNumber(info.seaLevel, 0) })));
       if (info.coastKm !== null && info.coastKm > 0.3) facts.push(esc(t("ui.coastOffshore", { km: formatNumber(info.coastKm, 1) })) + ` <small>(${esc(t("ui.estimate"))})</small>`);
       q(".facts").innerHTML = facts.map(f => `<span>${f}</span>`).join("");
+      const placesKey = info.places.join(",");
+      if (placesKey !== lastPlaces) {
+        lastPlaces = placesKey;
+        const box = q<HTMLDivElement>(".places");
+        box.innerHTML = info.places.length ? `<h4>${esc(t("ui.places"))}</h4>${info.places.map(id => `<button data-place="${id}">${esc(t(`place.${id}.title`))}</button>`).join("")}` : "";
+        box.querySelectorAll<HTMLButtonElement>("[data-place]").forEach(b => b.addEventListener("click", () => h.onPlace(b.dataset.place!)));
+      }
       status.textContent = info.photo ? t("ui.photoBlend", { photo: info.partial ? `${info.photo} (${t("ui.estimate")})` : info.photo }) : t("ui.photoNone");
       q(".gallery-btn").textContent = `${t("ui.gallery")} (${info.galleryCount})`;
     },

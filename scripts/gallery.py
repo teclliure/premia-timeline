@@ -89,7 +89,55 @@ def save(img: Image.Image, stem: str) -> tuple[str, str]:
     return f"gallery/{stem}.webp", f"gallery/{stem}_t.webp"
 
 
+# One photo per place card (src/places.ts). Searched in Commons' File namespace; the first
+# freely licensed result wins. Any date is fine: these illustrate the place, not an era.
+PLACE_QUERIES = {
+    "can_manent": ["Can Manent Premià de Mar", "Can Manent Premià"],
+    "gas": ["Fàbrica del Gas Premià de Mar", "Museu de l'Estampació Premià de Mar"],
+    "fabrica_lio": ["Fàbrica Lió Premià de Mar", "Lió Premià de Mar"],
+    "can_gravada": ["Can Gravada Premià de Mar", "carrer Gibraltar Premià de Mar"],
+    "church": ["Sant Cristòfol Premià de Mar"],
+    "villa": ["Museu Romà Premià de Mar", "Can Ferrerons Premià de Mar"],
+    "port": ["Port de Premià de Mar"],
+}
+
+
+def search_files(q: str) -> list[str]:
+    r = S.get(API, params={"action": "query", "list": "search", "srsearch": q, "srnamespace": 6, "srlimit": 10,
+                           "format": "json"}, timeout=60).json()
+    return [h["title"] for h in r.get("query", {}).get("search", [])]
+
+
+def place_images() -> None:
+    out = {}
+    for pid, queries in PLACE_QUERIES.items():
+        for q in queries:
+            hit = None
+            for f in info(search_files(q)):
+                meta = f.get("extmetadata", {})
+                lic = strip(meta.get("LicenseShortName", {}).get("value", ""))
+                if OK.match(lic) and f.get("thumburl") and not f["title"].lower().endswith((".svg", ".pdf", ".tif", ".tiff")):
+                    hit = (f, meta, lic)
+                    break
+            if not hit:
+                continue
+            f, meta, lic = hit
+            img = Image.open(io.BytesIO(S.get(f["thumburl"], timeout=120).content)).convert("RGB")
+            file, thumb = save(img, f"place_{pid}")
+            out[pid] = {"title": strip(meta.get("ObjectName", {}).get("value", "")) or f["title"][5:],
+                        "author": strip(meta.get("Artist", {}).get("value", "")) or "desconegut",
+                        "licence": lic, "licence_url": strip(meta.get("LicenseUrl", {}).get("value", "")),
+                        "source_url": f["descriptionurl"], "file": file, "thumb": thumb,
+                        "year": year_from(meta)}
+            print("place", pid, lic, out[pid]["title"][:60])
+            break
+        else:
+            print("place", pid, "no freely licensed photo found")
+    (aoi.DATA / "places.json").write_text(json.dumps(out, ensure_ascii=False, indent=1))
+
+
 def main() -> None:
+    place_images()
     cap = int(sys.argv[sys.argv.index("--max") + 1]) if "--max" in sys.argv else 80
     cats = walk(ROOT_CATEGORY)
     titles = sorted({t for c in cats for t in members(c)})

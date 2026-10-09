@@ -123,3 +123,18 @@ a { color: #9fd0e6; }
   .seg span { display: none; }
   .banner { top: 104px; font-size: 11px; }
 }
+
+/* ---------------------------------------------------------------- places */
+.places { margin: 0 0 10px; }
+.places h4 { margin: 0 0 4px; font: 600 12px var(--sans); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.places button { background: rgba(255, 255, 255, 0.06); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; margin: 0 4px 4px 0; font-size: 13px; }
+.places button:hover { background: rgba(255, 255, 255, 0.16); }
+.label.link-label { pointer-events: auto; cursor: pointer; font: 600 12px var(--sans); color: var(--ink); border: 0; border-bottom: 2px solid #9fd0e6; }
+.label.link-label:hover { background: rgba(30, 50, 60, 0.9); }
+.place figure { margin: 10px 0; }
+.place figure img { width: 100%; max-height: 50vh; object-fit: cover; border-radius: 8px; background: #000; }
+.place figcaption { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.events { padding-left: 0; list-style: none; margin: 0; }
+.events li { padding: 4px 0 4px 12px; border-left: 2px solid var(--line); color: var(--muted); }
+.events li.past { color: var(--ink); border-left-color: var(--accent); }
+.events b { font-variant-numeric: tabular-nums; margin-right: 6px; }

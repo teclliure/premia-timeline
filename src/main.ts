@@ -1,7 +1,9 @@
 import * as THREE from "three";
 import "./style.css";
 import { applyTranslations, t } from "./i18n";
-import { loadBuildings, loadCoastline, loadDem, loadFeatures, loadGallery, loadManifest, loadTrees } from "./data";
+import { loadBuildings, loadCoastline, loadDem, loadFeatures, loadGallery, loadManifest, loadPlacePhotos, loadTrees } from "./data";
+import { createPlaceCard } from "./placecard";
+import { placeById, placesIn } from "./places";
 import { createGround, pickGround } from "./ground";
 import { createTerrain } from "./terrain";
 import { createSea } from "./sea";
@@ -29,8 +31,8 @@ async function main() {
   const canvas = document.createElement("canvas");
   if (!canvas.getContext("webgl2")) { loading.textContent = t("app.webgl"); return; }
 
-  const [manifest, dem, coast, features, buildingData, treeData, galleryItems] = await Promise.all([
-    loadManifest(), loadDem(), loadCoastline(), loadFeatures(), loadBuildings(), loadTrees(), loadGallery(),
+  const [manifest, dem, coast, features, buildingData, treeData, galleryItems, placePhotos] = await Promise.all([
+    loadManifest(), loadDem(), loadCoastline(), loadFeatures(), loadBuildings(), loadTrees(), loadGallery(), loadPlacePhotos(),
   ]);
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance", preserveDrawingBuffer: new URLSearchParams(location.search).has("shot") });
@@ -48,12 +50,27 @@ async function main() {
   const ground = await createGround(dem, coast);
   const terrain = await createTerrain(ground, manifest);
   const sea = createSea(ground);
-  const buildings = createBuildings(buildingData, ground, features.pois.church ? [{ at: features.pois.church, r: 24 }] : []);
+  const exclude = [
+    ...(features.pois.church ? [{ at: features.pois.church, r: 24 }] : []),
+    ...(features.pois.can_manent ? [{ at: features.pois.can_manent, r: 14 }] : []),
+  ];
+  const buildings = createBuildings(buildingData, ground, exclude);
   const trees = createTrees(treeData, ground);
   const landmarks = createLandmarks(features, ground);
   scene.add(terrain.group, sea.mesh, buildings.mesh, trees.group, landmarks.group);
   const rig = createCamera(canvas, ground, features);
   const gallery = createGallery(galleryItems);
+  const pois = features.pois as Record<string, [number, number] | undefined>;
+  const flyToPlace = (id: string) => {
+    const p = placeById(id);
+    const at = p && pois[p.poi];
+    if (!at) return;
+    const h = Math.max(ground.height(at[0], at[1]), 0);
+    const target = new THREE.Vector3(at[0], h + 6, -at[1]);
+    const pos = new THREE.Vector3(at[0] + ground.seaN[0] * 120 - ground.coast.axis[0] * 60, h + 75, -(at[1] + ground.seaN[1] * 120 - ground.coast.axis[1] * 60));
+    rig.flyTo(pos, target);
+  };
+  const placeCard = createPlaceCard(placePhotos, flyToPlace);
 
   // ------------------------------------------------------------------ state
   const params = new URLSearchParams(location.hash.slice(1));
@@ -79,6 +96,7 @@ async function main() {
     onDetail(q) { setQuality(q); autoQuality = false; ui.setQuality(quality, false); },
     onAuto(on) { autoQuality = on; },
     onLabels(on) { labelsOn = on; dirty = true; },
+    onPlace(id) { placeCard.open(id, yearAt(pos)); },
   }, manifest.placeholder || Boolean(buildingData.placeholder) || Boolean((features as { placeholder?: boolean }).placeholder));
   rig.onModeChange(m => ui.setMode(m));
   ui.setMode(rig.mode);
@@ -134,7 +152,7 @@ async function main() {
     buildings.setYear(year, playing ? Math.max(yearsPerStep(year, 0.006) * 1.5, 1) : 0.001);
     trees.setYear(year);
     landmarks.setYear(year);
-    ui.setYear({ year, seaLevel: level, coastKm: coastDistanceKm(level), photo: photo.photo, partial: photo.partial, census: censusBefore(year), galleryCount: gallery.countFor(year) });
+    ui.setYear({ places: placesIn(eraAt(year).from, eraAt(year).to, pois).map(p => p.id), year, seaLevel: level, coastKm: coastDistanceKm(level), photo: photo.photo, partial: photo.partial, census: censusBefore(year), galleryCount: gallery.countFor(year) });
     scheduleHash();
     shadowsDirty = dirty = true;
   }
@@ -199,7 +217,12 @@ async function main() {
   const v = new THREE.Vector3();
   function placeLabels(year: number) {
     for (const l of landmarks.labels) {
-      if (!l.el) { l.el = document.createElement("div"); l.el.className = "label"; ui.labelsRoot.appendChild(l.el); }
+      if (!l.el) {
+        l.el = document.createElement(l.place ? "button" : "div");
+        l.el.className = l.place ? "label link-label" : "label";
+        if (l.place) { const id = l.place; l.el.addEventListener("click", () => placeCard.open(id, yearAt(pos))); }
+        ui.labelsRoot.appendChild(l.el);
+      }
       const show = labelsOn && year >= l.from && year < l.to;
       if (!show) { l.el.style.display = "none"; continue; }
       v.set(l.at[0], Math.max(ground.height(l.at[0], l.at[1]), 0) + l.lift, -l.at[1]);
