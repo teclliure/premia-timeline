@@ -94,7 +94,7 @@ export function createUI(h: UIHandlers, placeholder: boolean): UI {
 <button class="play" aria-label="${esc(t("ui.play"))}"><svg viewBox="0 0 24 24" width="20" height="20"><path class="ico" d="M7 5v14l11-7z"/></svg></button>
 <div class="track" role="slider" tabindex="0" aria-label="${esc(t("app.title"))}">
   <div class="eras">${ERAS.map(e => `<div class="seg" style="left:${posAt(e.from) * 100}%;width:${(posAt(e.to) - posAt(e.from)) * 100}%;background:${e.color}" title="${esc(t(`eras.${e.id}.title`))}"><span>${esc(t(`eras.${e.id}.title`))}</span></div>`).join("")}</div>
-  <div class="ticks">${MILESTONES.map(m => `<i style="left:${posAt(m.year) * 100}%" title="${esc(`${m.estimate ? t("year.approx") + " " : ""}${formatYear(m.year)} · ${t(`ms.${m.id}`)}`)}"></i>`).join("")}</div>
+  <div class="ticks">${MILESTONES.map(m => `<i style="left:${posAt(m.year) * 100}%" title="${esc(`${m.estimate ? t("year.approx") + " " : ""}${formatYear(Math.floor(m.year))} · ${t(`ms.${m.id}`)}`)}"></i>`).join("")}</div>
   <div class="handle"><span></span></div>
 </div>
 <div class="status"></div>`;

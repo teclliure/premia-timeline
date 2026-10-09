@@ -42,6 +42,15 @@ export const PLACES: Place[] = [
     ],
   },
   {
+    id: "can_sanpere", poi: "can_sanpere", from: 1842, to: 3000, sources: ["sanpere", "mayolas"],
+    events: [
+      { year: 1842, key: "mayolas" }, { year: 1850, key: "looms1850" }, { year: 1862, key: "dye" },
+      { year: 1867, key: "paris" }, { year: 1885, key: "company" }, { year: 1898, key: "founded" },
+      { year: 1901, key: "workers" }, { year: 1930, key: "building" }, { year: 1934, key: "sa" },
+      { year: 1936.5, key: "war" }, { year: 1998.55, key: "closed" },
+    ],
+  },
+  {
     id: "can_gravada", poi: "can_gravada", from: 1908, to: 3000, sources: ["gravada"],
     events: [
       { year: 1908, key: "built", estimate: true }, { year: 1912, key: "colomer" }, { year: 1918, key: "mujal" },

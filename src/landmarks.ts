@@ -316,6 +316,16 @@ export function createLandmarks(f: Features, ground: Ground): Landmarks {
     group.add(gas);
   }
 
+  // --- Can Sanpere: 1930 rationalist building with a ~20 m brick chimney (DIBA 58375). The
+  // building itself comes from the Catastro; only the chimney is modelled here.
+  let sanpereChimney: THREE.Mesh | null = null;
+  if (f.pois.can_sanpere) {
+    sanpereChimney = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 1.4, 20, 10).translate(0, 10, 0), lamb(0xa15d40));
+    sanpereChimney.castShadow = true;
+    place(sanpereChimney, [f.pois.can_sanpere[0] + 6, f.pois.can_sanpere[1] + 4]);
+    group.add(sanpereChimney);
+  }
+
   // --- labels
   const L = (key: string, at: Pt | undefined, lift: number, from: number, to: number, text: (y: number) => string, place?: string) => {
     if (at) labels.push({ key, at, lift, from, to, text, place });
@@ -324,6 +334,7 @@ export function createLandmarks(f: Features, ground: Ground): Landmarks {
   L("church", f.pois.church, 40, 1798, 3000, y => (y >= 1936.5 && y < 1939 ? t("label.church.ruin") : t("label.church")), "church");
   L("can_manent", f.pois.can_manent, 16, 1618, 3000, () => t("label.can_manent"), "can_manent");
   L("gas", f.pois.museu_estampacio, 22, 1884.1, 3000, y => (y >= 2002.3 ? t("label.gas.museum") : t("label.gas")), "gas");
+  L("can_sanpere", f.pois.can_sanpere, 26, 1930, 3000, () => t("label.can_sanpere"), "can_sanpere");
   L("can_gravada", f.pois.can_gravada, 14, 1908, 3000, () => t("label.can_gravada"), "can_gravada");
   L("aurora", f.pois.carrer_aurora, 10, 1898, 3000, () => t("label.aurora"), "aurora");
   L("church_dalt", f.pois.church_dalt, 30, 1798, 3000, () => t("label.church_dalt"));
@@ -371,6 +382,7 @@ export function createLandmarks(f: Features, ground: Ground): Landmarks {
       for (const c of chimneys) c.mesh.visible = year >= c.from && year < c.to;
       villa.visible = year >= 250 && year < 500;
       manent.visible = year >= 1618;
+      if (sanpereChimney) sanpereChimney.visible = year >= 1930;
       const gasOn = year >= 1884.1 && year < 1983;
       gas.visible = year >= 1884.1;
       gasTanks.forEach(t => { t.visible = gasOn; });

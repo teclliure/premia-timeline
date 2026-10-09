@@ -8,5 +8,9 @@
   120.2,
   -490.6
  ],
- "_sources": "can_gravada: DIBA 58202 (41.48907, 2.35505); carrer_aurora: DIBA 58287 (41.49109, 2.35898)"
+ "_sources": "can_gravada: DIBA 58202 (41.48907, 2.35505); carrer_aurora: DIBA 58287 (41.49109, 2.35898); can_sanpere: DIBA 58375, UTM 446232 4593378",
+ "can_sanpere": [
+  -139.0,
+  -586.0
+ ]
 }

@@ -97,6 +97,7 @@ PLACE_QUERIES = {
     "fabrica_lio": ["Fàbrica Lió Premià de Mar", "Lió Premià de Mar"],
     "can_gravada": ["Can Gravada Premià de Mar", "carrer Gibraltar Premià de Mar"],
     "church": ["Sant Cristòfol Premià de Mar"],
+    "can_sanpere": ["Can Sanpere Premià de Mar", "carrer Sant Cristòfol 41 Premià de Mar", "xemeneia Premià de Mar"],
     "villa": ["Museu Romà Premià de Mar", "Can Ferrerons Premià de Mar"],
     "port": ["Port de Premià de Mar"],
 }
