@@ -58,25 +58,81 @@ def local(lon: float, lat: float) -> list[float]:
     return [round(x - B["cx"], 1), round(y - B["cy"], 1)]
 
 
+def enrich(pois: dict, headers: dict) -> dict:
+    """Add geocoded and manual POIs (scripts/pois_manual.json) that OSM does not name."""
+    # Places OSM does not name: geocode their documented addresses (Nominatim, max 1 req/s).
+    import time
+
+    GEOCODE = {
+        "fabrica_lio": "Carrer de Joan Prim 30, Premià de Mar",  # DIBA heritage record
+        "museu_roma": "Museu Romà, Premià de Mar",
+        "church_dalt": "Sant Pere de Premià, Premià de Dalt",
+        "frigorifics": "Carrer del Pilar, Premià de Mar",  # DIBA: Els Frigorífics / Illa de Premià
+        "vallpremia": "Vallpremià, Premià de Mar",
+        "museu_estampacio": "Carrer de Joan XXIII 2, Premià de Mar",
+        "station": "Estació de Premià de Mar",
+        "can_manent": ["Camí Ral 54, Premià de Mar", "Can Manent, Premià de Mar", "Biblioteca Can Manent, Premià de Mar"],  # DIBA 58219
+        "fundacio_crit": "Carrer de Sant Pau 13, Premià de Mar",  # DIBA 58389
+    }
+    for key, qs in GEOCODE.items():
+        if key in pois:
+            continue
+        for q in [qs] if isinstance(qs, str) else qs:
+            try:
+                res = requests.get("https://nominatim.openstreetmap.org/search", params={"q": q, "format": "json", "limit": 1},
+                                   headers=headers, timeout=60).json()
+            except (requests.RequestException, ValueError) as e:
+                print("geocode", key, e)
+                continue
+            finally:
+                time.sleep(1.1)
+            if res:
+                p = local(float(res[0]["lon"]), float(res[0]["lat"]))
+                if abs(p[0]) < B["size"] / 2 and abs(p[1]) < B["size"] / 2:
+                    pois[key] = p
+                    print("geocoded", key, q, p)
+                    break
+            print("geocode: nothing for", key, q)
+    manual = aoi.ROOT / "scripts/pois_manual.json"
+    if manual.exists():
+        pois.update({k: v for k, v in json.loads(manual.read_text()).items() if not k.startswith("_")})
+    return pois
+
+
 def main() -> None:
     headers = {"User-Agent": "premia-timeline/0.1 (https://github.com/teclliure/premia-timeline)", "Accept": "application/json"}
     import urllib3.util.connection as uc
 
     uc.HAS_IPV6 = False  # GitHub runners have no IPv6 route; Overpass resolves to IPv6 first
     r = None
-    for host in ("https://overpass-api.de/api/interpreter", "https://overpass.private.coffee/api/interpreter",
-                 "https://overpass.kumi.systems/api/interpreter", "https://maps.mail.ru/osm/tools/overpass/api/interpreter"):
-        try:
-            r = requests.post(host, data={"data": QUERY}, headers=headers, timeout=300)
-        except requests.RequestException as e:
-            print(host, e)
-            continue
-        if r.ok:
+    hosts = ("https://overpass-api.de/api/interpreter", "https://overpass.private.coffee/api/interpreter",
+             "https://overpass.kumi.systems/api/interpreter", "https://maps.mail.ru/osm/tools/overpass/api/interpreter")
+    import time as _time
+
+    for attempt in range(3):
+        for host in hosts:
+            try:
+                r = requests.post(host, data={"data": QUERY}, headers=headers, timeout=300)
+            except requests.RequestException as e:
+                print(host, e)
+                r = None
+                continue
+            if r.ok:
+                break
+            print(host, r.status_code, r.text[:120].replace("\n", " "))
+        if r is not None and r.ok:
             break
-        print(host, r.status_code, r.text[:200])
-    if r is None:
-        raise SystemExit("no Overpass server reachable")
-    r.raise_for_status()
+        _time.sleep(60 * (attempt + 1))
+    existing = aoi.DATA / "features.json"
+    if r is None or not r.ok:
+        if not existing.exists():
+            raise SystemExit("Overpass unavailable and no features.json to keep")
+        print("Overpass unavailable: keeping the OSM features already in features.json, refreshing places only")
+        old = json.loads(existing.read_text())
+        old["pois"] = enrich(old.get("pois", {}), headers)
+        existing.write_text(json.dumps(old, separators=(",", ":")))
+        print("pois", old["pois"])
+        return
     els = r.json()["elements"]
     lines = {"railway": [], "n2": [], "c32": [], "streets": [], "breakwater": [], "pier": []}
     areas = {"beach": [], "harbour": []}
@@ -114,42 +170,7 @@ def main() -> None:
         for key, needles in POIS.items():
             if key not in pois and centre and any(n in name for n in needles):
                 pois[key] = centre
-    # Places OSM does not name: geocode their documented addresses (Nominatim, max 1 req/s).
-    import time
-
-    GEOCODE = {
-        "fabrica_lio": "Carrer de Joan Prim 30, Premià de Mar",  # DIBA heritage record
-        "museu_roma": "Museu Romà, Premià de Mar",
-        "church_dalt": "Sant Pere de Premià, Premià de Dalt",
-        "frigorifics": "Carrer del Pilar, Premià de Mar",  # DIBA: Els Frigorífics / Illa de Premià
-        "vallpremia": "Vallpremià, Premià de Mar",
-        "museu_estampacio": "Carrer de Joan XXIII 2, Premià de Mar",
-        "station": "Estació de Premià de Mar",
-        "can_manent": ["Camí Ral 54, Premià de Mar", "Can Manent, Premià de Mar", "Biblioteca Can Manent, Premià de Mar"],  # DIBA 58219
-        "fundacio_crit": "Carrer de Sant Pau 13, Premià de Mar",  # DIBA 58389
-    }
-    for key, qs in GEOCODE.items():
-        if key in pois:
-            continue
-        for q in [qs] if isinstance(qs, str) else qs:
-            try:
-                res = requests.get("https://nominatim.openstreetmap.org/search", params={"q": q, "format": "json", "limit": 1},
-                                   headers=headers, timeout=60).json()
-            except (requests.RequestException, ValueError) as e:
-                print("geocode", key, e)
-                continue
-            finally:
-                time.sleep(1.1)
-            if res:
-                p = local(float(res[0]["lon"]), float(res[0]["lat"]))
-                if abs(p[0]) < B["size"] / 2 and abs(p[1]) < B["size"] / 2:
-                    pois[key] = p
-                    print("geocoded", key, q, p)
-                    break
-            print("geocode: nothing for", key, q)
-    manual = aoi.ROOT / "scripts/pois_manual.json"
-    if manual.exists():
-        pois.update({k: v for k, v in json.loads(manual.read_text()).items() if not k.startswith("_")})
+    pois = enrich(pois, headers)
     out = {"lines": lines, "areas": areas, "pois": pois, "chimneys": chimneys,
            "attribution": "© OpenStreetMap contributors, ODbL"}
     aoi.DATA.mkdir(parents=True, exist_ok=True)
