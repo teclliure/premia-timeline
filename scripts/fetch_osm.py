@@ -58,7 +58,12 @@ def local(lon: float, lat: float) -> list[float]:
 
 
 def main() -> None:
-    r = requests.post("https://overpass-api.de/api/interpreter", data={"data": QUERY}, timeout=300)
+    headers = {"User-Agent": "premia-timeline/0.1 (https://github.com/teclliure/premia-timeline)", "Accept": "application/json"}
+    for host in ("https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"):
+        r = requests.post(host, data={"data": QUERY}, headers=headers, timeout=300)
+        if r.ok:
+            break
+        print(host, r.status_code, r.text[:200])
     r.raise_for_status()
     els = r.json()["elements"]
     lines = {"railway": [], "n2": [], "c32": [], "streets": [], "breakwater": []}

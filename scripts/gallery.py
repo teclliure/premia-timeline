@@ -27,7 +27,7 @@ API = "https://commons.wikimedia.org/w/api.php"
 CATEGORIES = ["Category:History of Premià de Mar", "Category:Premià de Mar", "Category:Old photographs of Premià de Mar"]
 OK = re.compile(r"^(public domain|pd|cc0|cc by(-sa)? ?[0-9.]*)", re.I)
 S = requests.Session()
-S.headers["User-Agent"] = "premia-timeline gallery builder (contact: see README)"
+S.headers["User-Agent"] = "premia-timeline/0.1 (https://github.com/teclliure/premia-timeline)"
 OUT = aoi.PUBLIC / "gallery"
 
 

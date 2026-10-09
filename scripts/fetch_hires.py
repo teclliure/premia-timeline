@@ -1,5 +1,5 @@
 # /// script
-# dependencies = ["requests", "pyproj", "pillow", "lxml", "numpy", "tifffile"]
+# dependencies = ["requests", "pyproj", "pillow", "lxml", "numpy", "tifffile", "scipy"]
 # ///
 """Latest orthophoto at 0.5 m for the inner box (historic centre, seafront, railway).
 

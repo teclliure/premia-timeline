@@ -57,7 +57,8 @@ def download() -> list[tuple[str, bytes, bytes]]:
     """(municipality, building.gml, buildingpart.gml) for every municipality in the box."""
     cache = aoi.RAW / "bu"
     cache.mkdir(parents=True, exist_ok=True)
-    feed = etree.fromstring(requests.get(ATOM, timeout=120).content)
+    UA = {"User-Agent": "premia-timeline/0.1 (https://github.com/teclliure/premia-timeline)"}
+    feed = etree.fromstring(requests.get(ATOM, timeout=120, headers=UA).content)
     out = []
     for entry in feed.iter("{*}entry"):
         title = (entry.findtext("{*}title") or "").upper()
@@ -70,7 +71,7 @@ def download() -> list[tuple[str, bytes, bytes]]:
         zpath = cache / f"{name}.zip"
         if not zpath.exists():
             print("download", title, href)
-            zpath.write_bytes(requests.get(href, timeout=600).content)
+            zpath.write_bytes(requests.get(href, timeout=600, headers=UA).content)
         z = zipfile.ZipFile(zpath)
         bfile = next(n for n in z.namelist() if n.endswith(".building.gml"))
         pfile = next(n for n in z.namelist() if n.endswith(".buildingpart.gml"))
