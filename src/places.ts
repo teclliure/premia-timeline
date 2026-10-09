@@ -42,12 +42,18 @@ export const PLACES: Place[] = [
     ],
   },
   {
-    id: "can_sanpere", poi: "can_sanpere", from: 1842, to: 3000, sources: ["sanpere", "mayolas"],
+    id: "can_sanpere", poi: "can_sanpere", from: 1842, to: 3000,
+    sources: ["sanpere", "mayolas", "sanpereAssoc", "sanpereDirecta", "sanpereCapgros"],
     events: [
       { year: 1842, key: "mayolas" }, { year: 1850, key: "looms1850" }, { year: 1862, key: "dye" },
       { year: 1867, key: "paris" }, { year: 1885, key: "company" }, { year: 1898, key: "founded" },
       { year: 1901, key: "workers" }, { year: 1930, key: "building" }, { year: 1934, key: "sa" },
       { year: 1936.5, key: "war" }, { year: 1998.55, key: "closed" },
+      { year: 1999, key: "nunez", estimate: true }, { year: 2001, key: "platform" }, { year: 2005, key: "licence" },
+      { year: 2013.3, key: "occupied" }, { year: 2014, key: "consulta" }, { year: 2017, key: "bcil" },
+      { year: 2018, key: "fabrika" }, { year: 2018.5, key: "poum" }, { year: 2019.96, key: "eviction" },
+      { year: 2022, key: "association" }, { year: 2023, key: "festa" }, { year: 2024, key: "expropriation" },
+      { year: 2025.9, key: "demolition" }, { year: 2026, key: "plan" },
     ],
   },
   {

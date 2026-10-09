@@ -71,6 +71,9 @@ export const SOURCES = {
   aurora: { title: "Inventari del Patrimoni Cultural (Diputació de Barcelona) · Carrer Aurora", url: "https://patrimonicultural.diba.cat/print/pdf/node/58287" },
   sanpere: { title: "Inventari del Patrimoni Cultural (Diputació de Barcelona) · Can Sanpere", url: "https://patrimonicultural.diba.cat/print/pdf/node/58375" },
   mayolas: { title: "Enciclopèdia.cat · Fàbriques i empresaris: els Mayolas i Claudi Sanpere", url: "https://www.enciclopedia.cat/fabriques-i-empresaris/els-mayolas-i-claudi-sanpere" },
+  sanpereAssoc: { title: "Associació de Can Sanpere · Història", url: "https://cansanpere.org/historia/" },
+  sanpereDirecta: { title: "Directa (16-12-2019) · La fàbrica Can Sanpere afronta un nou intent de desallotjament", url: "https://directa.cat/la-fabrica-can-sanpere-de-premia-de-mar-afronta-un-nou-intent-de-desallotjament/" },
+  sanpereCapgros: { title: "Capgròs / ACN (28-11-2025) · Can Sanpere per fi al terra: 20 anys de lluita", url: "https://capgros.elnacional.cat/ca/maresme/can-sanpere-fi-terra-20-anys-lluita-fer-hi-gran-zona-verda-nous-equipaments_817182_102.html" },
   nucli: { title: "Inventari del Patrimoni Cultural (Diputació de Barcelona) · Nucli històric", url: "https://patrimonicultural.diba.cat/print/pdf/node/58275" },
 } satisfies Record<string, Source>;
 export type SourceId = keyof typeof SOURCES;
@@ -101,7 +104,7 @@ export const ERAS: Era[] = [
   { id: "fabriques", from: 1898, to: 1939, color: "#8a4b4b", seconds: 12, confidence: 2, view: "core", sources: ["lio", "sanpere", "gas", "gravada", "aurora", "church", "wiki"] },
   { id: "creixement", from: 1939, to: 1972, color: "#5a7d6d", seconds: 14, confidence: 3, view: "overview", sources: ["wiki"] },
   { id: "port", from: 1972, to: 2000, color: "#3f7c95", seconds: 12, confidence: 3, view: "port", sources: ["port", "lio", "museu", "wiki"] },
-  { id: "avui", from: 2000, to: NOW, color: "#4a6b9b", seconds: 10, confidence: 3, view: "port", sources: ["port", "villa", "kiddle", "wiki"] },
+  { id: "avui", from: 2000, to: NOW, color: "#4a6b9b", seconds: 10, confidence: 3, view: "port", sources: ["port", "villa", "sanpereAssoc", "sanpereCapgros", "kiddle", "wiki"] },
 ];
 
 export function eraAt(year: number): Era {
@@ -147,6 +150,9 @@ export const MILESTONES: Milestone[] = [
   { year: 1991.3, id: "port1991", sources: ["port"] },
   { year: 2010.55, id: "portplan2010", sources: ["port"] },
   { year: 1998.55, id: "sanpere1998", sources: ["sanpere"] },
+  { year: 2013.3, id: "sanpere2013", sources: ["sanpereAssoc", "sanpereDirecta"] },
+  { year: 2024, id: "sanpere2024", sources: ["sanpereCapgros", "sanpereAssoc"] },
+  { year: 2025.9, id: "sanpere2025", sources: ["sanpereCapgros"] },
   { year: 2002.3, id: "gas2002", sources: ["museumCollection"] },
   { year: 2015, id: "museu2015", sources: ["museu"] },
   { year: 2018, id: "port2018", sources: ["kiddle"] },

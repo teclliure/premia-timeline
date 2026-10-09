@@ -334,7 +334,7 @@ export function createLandmarks(f: Features, ground: Ground): Landmarks {
   L("church", f.pois.church, 40, 1798, 3000, y => (y >= 1936.5 && y < 1939 ? t("label.church.ruin") : t("label.church")), "church");
   L("can_manent", f.pois.can_manent, 16, 1618, 3000, () => t("label.can_manent"), "can_manent");
   L("gas", f.pois.museu_estampacio, 22, 1884.1, 3000, y => (y >= 2002.3 ? t("label.gas.museum") : t("label.gas")), "gas");
-  L("can_sanpere", f.pois.can_sanpere, 26, 1930, 3000, () => t("label.can_sanpere"), "can_sanpere");
+  L("can_sanpere", f.pois.can_sanpere, 26, 1930, 3000, y => t(y >= 2025.9 ? "label.can_sanpere.works" : y >= 2013.3 ? "label.can_sanpere.social" : "label.can_sanpere"), "can_sanpere");
   L("can_gravada", f.pois.can_gravada, 14, 1908, 3000, () => t("label.can_gravada"), "can_gravada");
   L("aurora", f.pois.carrer_aurora, 10, 1898, 3000, () => t("label.aurora"), "aurora");
   L("church_dalt", f.pois.church_dalt, 30, 1798, 3000, () => t("label.church_dalt"));
