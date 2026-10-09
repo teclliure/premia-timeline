@@ -1,0 +1,36 @@
+name: Build real data
+
+# Runs scripts/run_all.sh on a GitHub runner (which can reach ICGC, IGN, Catastro, OSM, EMODnet
+# and Commons), commits public/ and uploads raw/ debug images as an artifact.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  data:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: bash scripts/run_all.sh
+      - name: Debug images
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raw-debug
+          path: |
+            raw/*.json
+            raw/*.txt
+            raw/debug_years_*.png
+            raw/ortho_*.jpg
+          if-no-files-found: ignore
+      - name: Commit data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git add public scripts
+          git commit -m "Real data from scripts/run_all.sh" || echo "nothing to commit"
+          git push

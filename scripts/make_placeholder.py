@@ -424,7 +424,7 @@ def main() -> None:
                                                    "min": float(dem.min()), "max": float(dem.max()), "source": "placeholder"}))
     print("dem", dem.shape, float(dem.min()), float(dem.max()))
 
-    zpath = aoi.ROOT / "scripts/zones.json"
+    zpath = aoi.ROOT / "scripts/zones_placeholder.json"
     if not zpath.exists():  # never overwrite zones drawn by hand
         zpath.write_text(json.dumps(ZONES, ensure_ascii=False, indent=1))
     parts = buildings(dem)

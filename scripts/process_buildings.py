@@ -119,6 +119,8 @@ def point_in_poly(x: float, y: float, poly) -> bool:
 
 
 ZONES = json.loads((aoi.ROOT / "scripts/zones.json").read_text())
+if not ZONES:
+    print("WARNING: scripts/zones.json is empty: every building uses its Catastro year (none before ~1900). Draw the historic zones with grid_view.py.")
 
 
 def hash01(s: str) -> float:

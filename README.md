@@ -48,7 +48,7 @@ inner high-res box over the centre, seafront and railway).
 | `make_placeholder.py` | the sample data |
 
 **Building years.** Catastro has no years before ~1900 and often stores the last renovation.
-Inside the hand-drawn historic zones of `scripts/zones.json` (drawn over the 1946/1956 photos)
+Inside the hand-drawn historic zones of `scripts/zones.json` (to be drawn over the 1946/1956 photos; empty until then, the sample-data drafts are in `zones_placeholder.json`)
 the year is a per-zone estimate that grows outwards from a seed point and is never later than
 the Catastro year; outside them the Catastro year is used. The app's *Notes i fonts* panel says
 this. **The zones in the repo are drafts in sample-data coordinates — redraw them** with
