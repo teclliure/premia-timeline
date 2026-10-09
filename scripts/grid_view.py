@@ -1,5 +1,5 @@
 # /// script
-# dependencies = ["pillow"]
+# dependencies = ["pillow", "pyproj"]
 # ///
 """Orthophoto window with a labelled local-metre grid, the zones of zones.json and the POIs of
 features.json — the image to draw zones over and to check every other output against.

@@ -1,1 +1,26 @@
-[]
+[
+ {
+  "id": "nucli_mar",
+  "name": "Nucli mariner al voltant de Sant Cristòfol",
+  "poly": [[-260, -855], [140, -715], [160, -560], [-215, -600]],
+  "seed": [-74, -680],
+  "radius": 260,
+  "from": 1800,
+  "to": 1860,
+  "power": 1.0,
+  "jitter": 15,
+  "note": "Drawn over the 1946 ICGC flight (grid_view.py ortho_1946 -900 -1300 900 100 100). The 1798 church sets the start; years are estimates."
+ },
+ {
+  "id": "eixample_xix",
+  "name": "Quadrícula del segle XIX i primer terç del XX",
+  "poly": [[-345, -875], [470, -555], [430, -320], [-320, -415]],
+  "seed": [-74, -680],
+  "radius": 620,
+  "from": 1850,
+  "to": 1940,
+  "power": 1.0,
+  "jitter": 20,
+  "note": "Built-up area in the 1946 flight outside the seafront core. Everything inside existed by 1946, so years run up to 1940 and are never later than Catastro's."
+ }
+]

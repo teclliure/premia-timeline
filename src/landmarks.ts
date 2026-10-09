@@ -147,7 +147,18 @@ export function createLandmarks(f: Features, ground: Ground): Landmarks {
   train.add(trainStripe);
   group.add(train);
 
-  // --- port breakwaters (built 1972–1975)
+  // --- port breakwaters (built 1972–1975). When OSM maps the port only as a harbour area, its
+  // seaward edges stand in for the breakwater.
+  if (!f.lines.breakwater.length && f.areas.harbour[0]) {
+    const ring = f.areas.harbour[0];
+    let cur: Pt[] = [];
+    for (let i = 0; i < ring.length; i++) {
+      const a = ring[i], b = ring[(i + 1) % ring.length];
+      if (ground.height((a[0] + b[0]) / 2, (a[1] + b[1]) / 2) < 0.3) { if (!cur.length) cur.push(a); cur.push(b); }
+      else if (cur.length) { f.lines.breakwater.push(cur); cur = []; }
+    }
+    if (cur.length) f.lines.breakwater.push(cur);
+  }
   const bwMat = lamb(0x9a968c);
   const breakwaters = f.lines.breakwater.map(line => {
     const len = lineLength(line);
