@@ -59,11 +59,22 @@ def local(lon: float, lat: float) -> list[float]:
 
 def main() -> None:
     headers = {"User-Agent": "premia-timeline/0.1 (https://github.com/teclliure/premia-timeline)", "Accept": "application/json"}
-    for host in ("https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"):
-        r = requests.post(host, data={"data": QUERY}, headers=headers, timeout=300)
+    import urllib3.util.connection as uc
+
+    uc.HAS_IPV6 = False  # GitHub runners have no IPv6 route; Overpass resolves to IPv6 first
+    r = None
+    for host in ("https://overpass-api.de/api/interpreter", "https://overpass.private.coffee/api/interpreter",
+                 "https://overpass.kumi.systems/api/interpreter", "https://maps.mail.ru/osm/tools/overpass/api/interpreter"):
+        try:
+            r = requests.post(host, data={"data": QUERY}, headers=headers, timeout=300)
+        except requests.RequestException as e:
+            print(host, e)
+            continue
         if r.ok:
             break
         print(host, r.status_code, r.text[:200])
+    if r is None:
+        raise SystemExit("no Overpass server reachable")
     r.raise_for_status()
     els = r.json()["elements"]
     lines = {"railway": [], "n2": [], "c32": [], "streets": [], "breakwater": []}

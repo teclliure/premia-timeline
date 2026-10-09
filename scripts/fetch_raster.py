@@ -104,7 +104,7 @@ def arcgrid(content: bytes) -> np.ndarray:
     lines = text.splitlines()
     head = {}
     k = 0
-    while k < len(lines) and lines[k].split() and lines[k].split()[0].isalpha():
+    while k < len(lines) and lines[k].split() and re.fullmatch(r"[A-Za-z_]+", lines[k].split()[0]):
         key, val = lines[k].split()[:2]
         head[key.lower()] = float(val)
         k += 1
