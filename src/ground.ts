@@ -86,9 +86,13 @@ function toHalf(dem: Dem): Uint16Array {
 }
 
 async function loadPixels(url: string): Promise<{ data: Uint8ClampedArray; px: number; tex: THREE.Texture }> {
+  // onload rather than img.decode(): decode() can stay pending while the tab is hidden.
   const img = new Image();
-  img.src = url;
-  await img.decode();
+  await new Promise<void>((resolve, reject) => {
+    img.onload = () => resolve();
+    img.onerror = () => reject(new Error(`${url}: failed to load`));
+    img.src = url;
+  });
   const c = document.createElement("canvas");
   c.width = img.width;
   c.height = img.height;
