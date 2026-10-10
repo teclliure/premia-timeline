@@ -339,6 +339,10 @@ export function createLandmarks(f: Features, ground: Ground): Landmarks {
   L("riera", f.pois.frigorifics, 10, -9700, 3000, () => t("label.riera"), "riera");
   L("cases_barates", f.pois.cases_barates, 12, 1922, 3000, () => t("label.cases_barates"), "cases_barates");
   L("caseta_aigues", f.pois.caseta_aigues, 10, 1928, 3000, () => t("label.caseta_aigues"), "caseta_aigues");
+  for (const [id, from] of [["vapor_vell", 1863], ["foneria_roura", 1881], ["can_galindo", 1840], ["ca_lescoda", 1940],
+    ["carboniques_pujol", 1900], ["salvador_simo", 1936]] as Array<[string, number]>) {
+    L(id, f.pois[id], 14, from, 3000, () => t(`place.${id}.title`), id);
+  }
   L("can_sanpere", f.pois.can_sanpere, 26, 1930, 3000, y => t(y >= 2025.9 ? "label.can_sanpere.works" : y >= 2013.3 ? "label.can_sanpere.social" : "label.can_sanpere"), "can_sanpere");
   L("can_gravada", f.pois.can_gravada, 14, 1908, 3000, () => t("label.can_gravada"), "can_gravada");
   L("aurora", f.pois.carrer_aurora, 10, 1898, 3000, () => t("label.aurora"), "aurora");

@@ -73,6 +73,12 @@ def enrich(pois: dict, headers: dict) -> dict:
         "station": "Estació de Premià de Mar",
         "can_manent": ["Camí Ral 54, Premià de Mar", "Can Manent, Premià de Mar", "Biblioteca Can Manent, Premià de Mar"],  # DIBA 58219
         "fundacio_crit": "Carrer de Sant Pau 13, Premià de Mar",  # DIBA 58389
+        # Industries from "Els Penjaculpes" (festamajorhivern.pdm.cat): located by street, approximate.
+        "vapor_vell": ["Plaça de la Sardana, Premià de Mar"],
+        "foneria_roura": ["Plaça dels Països Catalans, Premià de Mar"],
+        "can_galindo": ["Carrer de la Indústria, Premià de Mar", "Carrer de Jaume Balmes, Premià de Mar"],
+        "ca_lescoda": ["Ajuntament de Premià de Mar", "Plaça de l'Ajuntament, Premià de Mar"],
+        "carboniques_pujol": ["Carrer d'Àngel Guimerà, Premià de Mar"],
     }
     for key, qs in GEOCODE.items():
         if key in pois:

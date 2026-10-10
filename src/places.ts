@@ -20,17 +20,17 @@ export interface Place {
 export const PLACES: Place[] = [
   {
     id: "can_manent", poi: "can_manent", from: 1616, to: 3000,
-    sources: ["manent", "manentArch", "rectoria", "aeccImages", "manentAjunt", "manentCapgros", "manentPremiaMedia", "manentCrida"],
+    sources: ["manent", "manentArch", "rectoria", "aeccImages", "penjaculpes", "manentAjunt", "manentCapgros", "manentPremiaMedia", "manentCrida"],
     events: [
       { year: 1616, key: "built" }, { year: 1618, key: "first" }, { year: 1700, key: "lands", estimate: true }, { year: 1836, key: "church" },
       { year: 1977, key: "bought" }, { year: 1984, key: "library" }, { year: 1986, key: "museum" },
-      { year: 1986.5, key: "roman" }, { year: 2001, key: "museumEnd" }, { year: 2010, key: "libraryEnd" },
+      { year: 1986.5, key: "roman" }, { year: 1955, key: "ingaf", estimate: true }, { year: 2001, key: "museumEnd" }, { year: 2010, key: "libraryEnd" },
       { year: 2011, key: "debolit" }, { year: 2022.2, key: "works" }, { year: 2023.15, key: "crida" },
       { year: 2026.37, key: "festa" }, { year: 2026.43, key: "mostra" },
     ],
   },
   {
-    id: "gas", poi: "museu_estampacio", from: 1853, to: 3000, sources: ["gas", "museumCollection", "gasArch"],
+    id: "gas", poi: "museu_estampacio", from: 1853, to: 3000, sources: ["gas", "museumCollection", "gasArch", "penjaculpes"],
     events: [
       { year: 1853, key: "land" }, { year: 1884.1, key: "start" }, { year: 1913, key: "catalana" },
       { year: 1914, key: "war" }, { year: 1941, key: "end" }, { year: 1971, key: "natural" },
@@ -38,7 +38,7 @@ export const PLACES: Place[] = [
     ],
   },
   {
-    id: "fabrica_lio", poi: "fabrica_lio", from: 1898, to: 3000, sources: ["lio", "aurora"],
+    id: "fabrica_lio", poi: "fabrica_lio", from: 1898, to: 3000, sources: ["lio", "aurora", "penjaculpes"],
     events: [
       { year: 1898, key: "founded" }, { year: 1910, key: "workers", estimate: true }, { year: 1928, key: "conflict" },
       { year: 1930, key: "lio" }, { year: 1979, key: "closing" }, { year: 1985, key: "school" },
@@ -46,7 +46,7 @@ export const PLACES: Place[] = [
   },
   {
     id: "can_sanpere", poi: "can_sanpere", from: 1842, to: 3000,
-    sources: ["sanpere", "mayolas", "sanpereAssoc", "sanpereDirecta", "sanpereCapgros"],
+    sources: ["sanpere", "mayolas", "penjaculpes", "sanpereAssoc", "sanpereDirecta", "sanpereCapgros"],
     events: [
       { year: 1842, key: "mayolas" }, { year: 1850, key: "looms1850" }, { year: 1862, key: "dye" },
       { year: 1867, key: "paris" }, { year: 1885, key: "company" }, { year: 1898, key: "founded" },
@@ -60,8 +60,9 @@ export const PLACES: Place[] = [
     ],
   },
   {
-    id: "can_gravada", poi: "can_gravada", from: 1908, to: 3000, sources: ["gravada"],
+    id: "can_gravada", poi: "can_gravada", from: 1850, to: 3000, sources: ["gravada", "penjaculpes"],
     events: [
+      { year: 1850, key: "origin", estimate: true },
       { year: 1908, key: "built", estimate: true }, { year: 1912, key: "colomer" }, { year: 1918, key: "mujal" },
       { year: 1970, key: "saker", estimate: true }, { year: 1985, key: "tripol", estimate: true }, { year: 2010, key: "housing", estimate: true },
     ],
@@ -111,6 +112,35 @@ PLACES.push(
   {
     id: "caseta_aigues", poi: "caseta_aigues", from: 1928, to: 3000, sources: ["aigues", "nucli"],
     events: [{ year: 1928, key: "dosrius" }],
+  },
+);
+
+// Industries of "Els Penjaculpes" (Festa Major d'Hivern, Ajuntament de Premià de Mar). Locations
+// are geocoded from the streets the page gives, so they are approximate.
+PLACES.push(
+  {
+    id: "vapor_vell", poi: "vapor_vell", from: 1863, to: 3000, sources: ["penjaculpes"],
+    events: [{ year: 1863, key: "founded" }],
+  },
+  {
+    id: "foneria_roura", poi: "foneria_roura", from: 1881, to: 3000, sources: ["penjaculpes"],
+    events: [{ year: 1881, key: "founded" }],
+  },
+  {
+    id: "can_galindo", poi: "can_galindo", from: 1840, to: 3000, sources: ["penjaculpes"],
+    events: [{ year: 1840, key: "founded" }],
+  },
+  {
+    id: "ca_lescoda", poi: "ca_lescoda", from: 1940, to: 3000, sources: ["penjaculpes"],
+    events: [{ year: 1940, key: "sintetiques" }],
+  },
+  {
+    id: "carboniques_pujol", poi: "carboniques_pujol", from: 1900, to: 3000, sources: ["penjaculpes"],
+    events: [{ year: 1900, key: "founded", estimate: true }],
+  },
+  {
+    id: "salvador_simo", poi: "salvador_simo", from: 1936, to: 3000, sources: ["penjaculpes"],
+    events: [{ year: 1936, key: "founded" }],
   },
 );
 
