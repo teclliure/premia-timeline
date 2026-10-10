@@ -9,7 +9,7 @@ const esc = (s: string) => s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt
 
 export interface PlaceCard { open(id: string, year: number): void }
 
-export function createPlaceCard(photos: Record<string, PlacePhoto>, onFly: (id: string) => void): PlaceCard {
+export function createPlaceCard(photos: Record<string, PlacePhoto>, onFly: (id: string) => void, onContact: (id: string, title: string) => void): PlaceCard {
   const root = document.createElement("div");
   root.className = "modal place";
   root.hidden = true;
@@ -35,10 +35,11 @@ ${ph ? `<figure><img src="${esc(ph.file)}" alt="${esc(ph.title)}"><figcaption>${
 <ol class="events">${p.events.map(e => `<li class="${e.year <= year ? "past" : ""}"><b>${e.estimate ? t("year.approx") + " " : ""}${esc(formatYear(Math.floor(e.year)))}</b> ${esc(t(`place.${id}.e.${e.key}`))}</li>`).join("")}</ol>
 <h3>${esc(t("ui.sources"))}</h3>
 <ul class="sources">${p.sources.map(s => `<li><a href="${esc(SOURCES[s].url)}" target="_blank" rel="noopener">${esc(SOURCES[s].title)}</a></li>`).join("")}</ul>
-<div class="card-actions"><button class="fly">${esc(t("ui.flyTo"))}</button></div>
+<div class="card-actions"><button class="fly">${esc(t("ui.flyTo"))}</button><button class="contact-place">${esc(t("contact.place"))}</button></div>
 </div>`;
       root.querySelector(".close")!.addEventListener("click", () => { root.hidden = true; });
       root.querySelector(".fly")!.addEventListener("click", () => { root.hidden = true; onFly(id); });
+      root.querySelector(".contact-place")!.addEventListener("click", () => { root.hidden = true; onContact(id, t(`place.${id}.title`)); });
       root.hidden = false;
     },
   };

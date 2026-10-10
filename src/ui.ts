@@ -15,6 +15,7 @@ export interface UIHandlers {
   onAuto(on: boolean): void;
   onLabels(on: boolean): void;
   onPlace(id: string): void;
+  onContact(): void;
 }
 export type Quality = "low" | "medium" | "high";
 
@@ -130,9 +131,11 @@ export function createUI(h: UIHandlers, placeholder: boolean): UI {
   <label class="check"><input type="checkbox" class="auto" checked> ${esc(t("ctl.auto"))}</label>
   <label class="check"><input type="checkbox" class="labels-on" checked> ${esc(t("ctl.labels"))}</label>
 </details>
+<button class="contact-btn">${esc(t("contact.button"))}</button>
 <p class="help"></p>`;
   app.appendChild(side);
   side.querySelectorAll<HTMLButtonElement>("[data-mode]").forEach(b => b.addEventListener("click", () => h.onMode(b.dataset.mode as Mode)));
+  q(".contact-btn", side).addEventListener("click", h.onContact);
   side.querySelectorAll<HTMLButtonElement>("[data-view]").forEach(b => b.addEventListener("click", () => { h.onView(b.dataset.view as ViewId); (side.querySelector(".views") as HTMLDetailsElement).open = false; }));
   const hour = q<HTMLInputElement>(".hour", side);
   hour.addEventListener("input", () => h.onHour(Number(hour.value)));

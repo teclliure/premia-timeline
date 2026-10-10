@@ -138,3 +138,18 @@ a { color: #9fd0e6; }
 .events li { padding: 4px 0 4px 12px; border-left: 2px solid var(--line); color: var(--muted); }
 .events li.past { color: var(--ink); border-left-color: var(--accent); }
 .events b { font-variant-numeric: tabular-nums; margin-right: 6px; }
+
+/* ---------------------------------------------------------------- contact */
+.side .contact-btn { background: var(--accent); color: #151515; font-weight: 600; border: 0; padding: 7px 10px; }
+.contact form { display: flex; flex-direction: column; gap: 8px; }
+.contact label { display: flex; flex-direction: column; gap: 3px; font-size: 13px; color: var(--muted); }
+.contact label.check { flex-direction: row; align-items: flex-start; gap: 8px; color: var(--ink); }
+.contact input[type=text], .contact input[type=email], .contact select, .contact textarea {
+  background: #0e1317; border: 1px solid var(--line); border-radius: 6px; padding: 7px 8px; color: var(--ink); font: inherit; }
+.contact textarea { resize: vertical; }
+.contact .hint { margin: 0; font-size: 12px; color: var(--muted); }
+.contact .error { color: #f0a07a; margin: 0; }
+.contact .honey { display: none; }
+.contact .send { background: var(--accent); color: #151515; font-weight: 600; border: 0; }
+.contact .link { align-self: center; font-size: 13px; background: none; border: 0; }
+@media (max-width: 720px) { .side .contact-btn { flex: 1 1 100%; } }

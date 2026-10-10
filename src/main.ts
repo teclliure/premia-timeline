@@ -3,6 +3,7 @@ import "./style.css";
 import { applyTranslations, t } from "./i18n";
 import { loadBuildings, loadCoastline, loadDem, loadFeatures, loadGallery, loadManifest, loadPlacePhotos, loadTrees } from "./data";
 import { createPlaceCard } from "./placecard";
+import { consumeSentFlag, createContact } from "./contact";
 import { placeById, placesIn } from "./places";
 import { createGround, pickGround } from "./ground";
 import { createTerrain } from "./terrain";
@@ -70,7 +71,8 @@ async function main() {
     const pos = new THREE.Vector3(at[0] + ground.seaN[0] * 120 - ground.coast.axis[0] * 60, h + 75, -(at[1] + ground.seaN[1] * 120 - ground.coast.axis[1] * 60));
     rig.flyTo(pos, target);
   };
-  const placeCard = createPlaceCard(placePhotos, flyToPlace);
+  const contact = createContact();
+  const placeCard = createPlaceCard(placePhotos, flyToPlace, (id, title) => contact.open({ year: yearAt(pos), place: id, placeTitle: title }));
 
   // ------------------------------------------------------------------ state
   const params = new URLSearchParams(location.hash.slice(1));
@@ -97,6 +99,7 @@ async function main() {
     onAuto(on) { autoQuality = on; },
     onLabels(on) { labelsOn = on; dirty = true; },
     onPlace(id) { placeCard.open(id, yearAt(pos)); },
+    onContact() { contact.open({ year: yearAt(pos) }); },
   }, manifest.placeholder || Boolean(buildingData.placeholder) || Boolean((features as { placeholder?: boolean }).placeholder));
   rig.onModeChange(m => ui.setMode(m));
   ui.setMode(rig.mode);
@@ -240,6 +243,7 @@ async function main() {
   const clock = new THREE.Clock();
   let frames: number[] = [];
   let lastShadowTarget = new THREE.Vector3(1e9, 0, 0);
+  consumeSentFlag(msg => ui.flash(msg));
   loading.remove();
   document.body.classList.add("ready");
 
