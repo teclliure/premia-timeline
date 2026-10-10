@@ -1,14 +1,16 @@
 // "Contacte / Aporta": report errors or send images and information. The site is static, so the form
-// posts to FormSubmit (formsubmit.co), which emails it, attachments included, to CONTACT_EMAIL.
-// The first submission triggers an activation email from FormSubmit; after activating, replace
-// CONTACT_EMAIL with the random alias FormSubmit gives so the address is not in the page source.
+// is sent in the background to FormSubmit (formsubmit.co), which emails it, attachments included,
+// to the owner's inbox through the alias below. If sending fails, "o escriu un correu" opens an
+// email draft with the message already written.
 import { t } from "./i18n";
 import { formatYear } from "./timeline";
 
-export const CONTACT_EMAIL = "marc@teclliure.net";
-// AJAX endpoint: the visitor stays on the page and gets a clear result (the redirect flow left people
-// on a slow third-party captcha page).
-const ENDPOINT = `https://formsubmit.co/ajax/${CONTACT_EMAIL}`;
+// FormSubmit alias of the inbox, so the address is not in the page source. The AJAX route for an
+// "el/" alias is not documented: both forms are tried, a 404 / non-JSON answer moves to the next.
+const ALIAS = "henune";
+const ENDPOINTS = [`https://formsubmit.co/ajax/el/${ALIAS}`, `https://formsubmit.co/ajax/${ALIAS}`];
+/** Mail address for the fallback link, assembled only when needed (not greppable in the bundle). */
+const mailAddress = (): string => [String.fromCharCode(109, 97, 114, 99), ["teclliure", "net"].join(".")].join("@");
 const MAX_MB = 10;
 
 const esc = (s: string) => s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
@@ -30,7 +32,7 @@ export function createContact(flash?: (msg: string) => void): Contact {
       root.innerHTML = `<div class="modal-card">
 <header><h2>${esc(t("contact.title"))}</h2><button type="button" class="close" aria-label="${esc(t("ui.close"))}">×</button></header>
 <p>${esc(t("contact.intro"))}</p>
-<form action="${ENDPOINT}" method="POST" enctype="multipart/form-data">
+<form method="POST" enctype="multipart/form-data">
   <input type="hidden" name="_subject" value="Premià a través del temps · ${esc(about)}">
   <input type="hidden" name="_template" value="table">
   <input type="hidden" name="Context" value="${esc(about)}${place ? ` (${esc(place)})` : ""} · ${esc(location.href)}">
@@ -54,7 +56,7 @@ export function createContact(flash?: (msg: string) => void): Contact {
   <p class="status" hidden></p>
   <div class="card-actions">
     <button type="submit" class="send">${esc(t("contact.send"))}</button>
-    <a class="link mailto" href="mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Premià a través del temps · ${about}`)}">${esc(t("contact.mailto"))}</a>
+    <a class="link mailto" href="#">${esc(t("contact.mailto"))}</a>
   </div>
 </form></div>`;
       root.querySelector(".close")!.addEventListener("click", () => { root.hidden = true; });
@@ -67,8 +69,9 @@ export function createContact(flash?: (msg: string) => void): Contact {
       const draft = () => {
         const fd = new FormData(form);
         const body = ["Tipus", "Sobre", "Missatge", "Nom", "email", "Context"].map(k => `${k}: ${fd.get(k) ?? ""}`).join("\n");
-        return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Premià a través del temps · ${about}`)}&body=${encodeURIComponent(body)}`;
+        return `mailto:${mailAddress()}?subject=${encodeURIComponent(`Premià a través del temps · ${about}`)}&body=${encodeURIComponent(body)}`;
       };
+      mailto.addEventListener("click", () => { mailto.href = draft(); });
       form.addEventListener("submit", async e => {
         e.preventDefault();
         const files = (form.querySelector("input[type=file]") as HTMLInputElement).files;
@@ -77,11 +80,17 @@ export function createContact(flash?: (msg: string) => void): Contact {
         send.disabled = true;
         show(t("contact.sending"), "info");
         try {
-          const ctl = new AbortController();
-          const timer = setTimeout(() => ctl.abort(), 45000);
-          const r = await fetch(ENDPOINT, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" }, signal: ctl.signal });
-          clearTimeout(timer);
-          const res = await r.json().catch(() => ({} as { success?: string | boolean; message?: string }));
+          let r: Response | null = null;
+          let res: { success?: string | boolean; message?: string } = {};
+          for (const url of ENDPOINTS) {
+            const ctl = new AbortController();
+            const timer = setTimeout(() => ctl.abort(), 45000);
+            r = await fetch(url, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" }, signal: ctl.signal });
+            clearTimeout(timer);
+            res = await r.json().catch(() => ({}));
+            if (r.status !== 404 && "success" in res) break;
+          }
+          if (!r) throw new Error("no endpoint");
           if (r.ok && String(res.success) === "true") {
             show(t("contact.thanks"), "ok");
             form.reset();
