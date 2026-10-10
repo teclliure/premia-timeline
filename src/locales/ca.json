@@ -395,9 +395,11 @@
   "contact.name": "Nom (opcional)",
   "contact.email": "Correu electrònic (opcional, per poder respondre't)",
   "contact.licence": "Soc l'autor/a o tinc permís, i autoritzo publicar les imatges al web citant-ne l'autoria.",
-  "contact.privacy": "El missatge s'envia per correu a través del servei FormSubmit. Les dades només es fan servir per respondre i millorar aquest web.",
+  "contact.privacy": "El missatge s'envia per correu a través del servei FormSubmit sense sortir d'aquesta pàgina. Les dades només es fan servir per respondre i millorar aquest web.",
   "contact.send": "Enviar",
   "contact.mailto": "o escriu un correu",
   "contact.tooBig": "Els fitxers ocupen més de {mb} MB. Redueix-los o envia'ls per correu.",
-  "contact.thanks": "Gràcies! El missatge s'ha enviat."
+  "contact.thanks": "Gràcies! El missatge s'ha enviat.",
+  "contact.sending": "Enviant…",
+  "contact.failed": "No s'ha pogut enviar. Prova-ho més tard o fes servir «o escriu un correu», que ja porta el missatge (adjunta-hi les imatges)."
 }

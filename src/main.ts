@@ -71,7 +71,7 @@ async function main() {
     const pos = new THREE.Vector3(at[0] + ground.seaN[0] * 120 - ground.coast.axis[0] * 60, h + 75, -(at[1] + ground.seaN[1] * 120 - ground.coast.axis[1] * 60));
     rig.flyTo(pos, target);
   };
-  const contact = createContact();
+  const contact = createContact(msg => ui.flash(msg));
   const placeCard = createPlaceCard(placePhotos, flyToPlace, (id, title) => contact.open({ year: yearAt(pos), place: id, placeTitle: title }));
 
   // ------------------------------------------------------------------ state
