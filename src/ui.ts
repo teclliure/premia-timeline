@@ -1,6 +1,6 @@
 // Time bar, era card, camera / view buttons, scene controls and the "Notes i fonts" panel.
 import { t, formatNumber } from "./i18n";
-import { ERAS, MILESTONES, SOURCES, eraAt, formatYear, posAt, type Era } from "./timeline";
+import { ERAS, MILESTONES, NOW, SOURCES, eraAt, formatYear, posAt, type Era } from "./timeline";
 import { VIEW_IDS, type Mode, type ViewId } from "./camera";
 
 export interface UIHandlers {
@@ -186,7 +186,7 @@ ${ph ? `<p class="warn">${esc(t("notes.placeholder"))}</p>` : ""}
         q(".era-title").textContent = t(`eras.${e.id}.title`);
         q(".era-subtitle").textContent = t(`eras.${e.id}.subtitle`);
         q(".era-text").textContent = t(`eras.${e.id}.text`);
-        q(".era-dates").textContent = `${e.approximateStart ? t("year.approx") + " " : ""}${formatYear(e.from)} – ${formatYear(Math.min(e.to, 2026))}`;
+        q(".era-dates").textContent = `${e.approximateStart ? t("year.approx") + " " : ""}${formatYear(e.from)} – ${formatYear(Math.min(e.to, NOW))}`;
         more.innerHTML = `<p>${esc(t(`eras.${e.id}.detail`))}</p>
 <p><strong>${esc(t("ui.look"))}:</strong> ${esc(t(`eras.${e.id}.look`))}</p>
 <p class="note"><strong>${esc(t("ui.note"))}:</strong> ${esc(t(`eras.${e.id}.note`))}</p>

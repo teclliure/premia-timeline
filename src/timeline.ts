@@ -3,7 +3,9 @@
 import { t, formatNumber } from "./i18n";
 
 export const START = -25000;
-export const NOW = 2026;
+/** End of the timeline: today, as a fractional year (so events earlier this year are reachable). */
+const today = new Date();
+export const NOW = today.getFullYear() + (today.getMonth() + today.getDate() / 31) / 12;
 
 /** Non-linear scale: [slider position 0..1, year]. Prehistory is compressed, 1800–today expanded. */
 const KEYS: Array<[number, number]> = [
@@ -38,7 +40,8 @@ export function yearsPerStep(year: number, step = 0.004): number {
 }
 
 export function formatYear(y: number): string {
-  const r = Math.round(y);
+  // Floor, not round: 1848.9 is still 1848, and the end of the bar shows the current year.
+  const r = Math.floor(y + 1e-6);
   if (r < 0) return `${formatNumber(-r)} ${t("year.bc")}`;
   if (r < 1000) return `${r} ${t("year.ad")}`;
   return String(r);
@@ -71,6 +74,10 @@ export const SOURCES = {
   aurora: { title: "Inventari del Patrimoni Cultural (Diputació de Barcelona) · Carrer Aurora", url: "https://patrimonicultural.diba.cat/print/pdf/node/58287" },
   sanpere: { title: "Inventari del Patrimoni Cultural (Diputació de Barcelona) · Can Sanpere", url: "https://patrimonicultural.diba.cat/print/pdf/node/58375" },
   mayolas: { title: "Enciclopèdia.cat · Fàbriques i empresaris: els Mayolas i Claudi Sanpere", url: "https://www.enciclopedia.cat/fabriques-i-empresaris/els-mayolas-i-claudi-sanpere" },
+  manentAjunt: { title: "Ajuntament de Premià de Mar · Can Manent, Casa de la Festa", url: "https://premiademar.cat/can-manent" },
+  manentCapgros: { title: "Capgròs · La masia més antiga d'un poble del Maresme esdevé la nova Casa de la Festa", url: "https://capgros.elnacional.cat/ca/maresme/masia-mes-antiga-poble-maresme-esdeve-nova-casa-festa_818484_102.html" },
+  manentPremiaMedia: { title: "Premià Media (17-03-2022) · Can Manent apunta a ser el 3r museu de Premià de Mar", url: "https://premiamedia.cat/can-manent-apunta-a-ser-el-3r-museu-de-premia-de-mar-un-centre-dinterpretacio-etnografica-sobre-letapa-preindustrial-del-municipi/" },
+  manentCrida: { title: "Crida Premianenca (25-02-2023) · Can Manent, Casa de la Festa de Premià de Mar", url: "https://cridapremianenca.cat/2023/02/can-manent-casa-de-la-festa-de-premia-de-mar/" },
   sanpereAssoc: { title: "Associació de Can Sanpere · Història", url: "https://cansanpere.org/historia/" },
   sanpereDirecta: { title: "Directa (16-12-2019) · La fàbrica Can Sanpere afronta un nou intent de desallotjament", url: "https://directa.cat/la-fabrica-can-sanpere-de-premia-de-mar-afronta-un-nou-intent-de-desallotjament/" },
   sanpereCapgros: { title: "Capgròs / ACN (28-11-2025) · Can Sanpere per fi al terra: 20 anys de lluita", url: "https://capgros.elnacional.cat/ca/maresme/can-sanpere-fi-terra-20-anys-lluita-fer-hi-gran-zona-verda-nous-equipaments_817182_102.html" },
@@ -104,7 +111,7 @@ export const ERAS: Era[] = [
   { id: "fabriques", from: 1898, to: 1939, color: "#8a4b4b", seconds: 12, confidence: 2, view: "core", sources: ["lio", "sanpere", "gas", "gravada", "aurora", "church", "wiki"] },
   { id: "creixement", from: 1939, to: 1972, color: "#5a7d6d", seconds: 14, confidence: 3, view: "overview", sources: ["wiki"] },
   { id: "port", from: 1972, to: 2000, color: "#3f7c95", seconds: 12, confidence: 3, view: "port", sources: ["port", "lio", "museu", "wiki"] },
-  { id: "avui", from: 2000, to: NOW, color: "#4a6b9b", seconds: 10, confidence: 3, view: "port", sources: ["port", "villa", "sanpereAssoc", "sanpereCapgros", "kiddle", "wiki"] },
+  { id: "avui", from: 2000, to: NOW, color: "#4a6b9b", seconds: 10, confidence: 3, view: "port", sources: ["port", "villa", "sanpereAssoc", "sanpereCapgros", "manentAjunt", "kiddle", "wiki"] },
 ];
 
 export function eraAt(year: number): Era {
@@ -157,6 +164,7 @@ export const MILESTONES: Milestone[] = [
   { year: 2015, id: "museu2015", sources: ["museu"] },
   { year: 2018, id: "port2018", sources: ["kiddle"] },
   { year: 2025, id: "pop2025", sources: ["wiki"] },
+  { year: 2026.37, id: "manent2026", sources: ["manentAjunt", "manentCapgros"] },
 ];
 
 /** Census figures (Wikipedia, historical population table). */

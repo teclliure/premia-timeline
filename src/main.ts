@@ -162,7 +162,7 @@ async function main() {
     clearTimeout(hashTimer);
     hashTimer = window.setTimeout(() => {
       const p = new URLSearchParams();
-      p.set("year", String(Math.round(yearAt(pos))));
+      { const y = yearAt(pos); p.set("year", String(Math.abs(y) < 3000 ? Math.round(y * 100) / 100 : Math.round(y))); }
       p.set("cam", rig.state());
       if (hour !== 11) p.set("h", String(hour));
       history.replaceState(null, "", `#${p.toString()}`);

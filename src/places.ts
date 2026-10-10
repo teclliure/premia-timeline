@@ -19,11 +19,14 @@ export interface Place {
 
 export const PLACES: Place[] = [
   {
-    id: "can_manent", poi: "can_manent", from: 1618, to: 3000, sources: ["manent", "manentArch", "rectoria", "aeccImages"],
+    id: "can_manent", poi: "can_manent", from: 1616, to: 3000,
+    sources: ["manent", "manentArch", "rectoria", "aeccImages", "manentAjunt", "manentCapgros", "manentPremiaMedia", "manentCrida"],
     events: [
-      { year: 1618, key: "first" }, { year: 1700, key: "lands", estimate: true }, { year: 1836, key: "church" },
+      { year: 1616, key: "built" }, { year: 1618, key: "first" }, { year: 1700, key: "lands", estimate: true }, { year: 1836, key: "church" },
       { year: 1977, key: "bought" }, { year: 1984, key: "library" }, { year: 1986, key: "museum" },
       { year: 1986.5, key: "roman" }, { year: 2001, key: "museumEnd" }, { year: 2010, key: "libraryEnd" },
+      { year: 2011, key: "debolit" }, { year: 2022.2, key: "works" }, { year: 2023.15, key: "crida" },
+      { year: 2026.37, key: "festa" }, { year: 2026.43, key: "mostra" },
     ],
   },
   {
