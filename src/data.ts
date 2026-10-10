@@ -25,7 +25,7 @@ export type Pt = [number, number];
 export interface Features {
   lines: { railway: Pt[][]; n2: Pt[][]; c32: Pt[][]; streets: Pt[][]; breakwater: Pt[][]; pier?: Pt[][] };
   areas: { beach: Pt[][]; harbour: Pt[][] };
-  pois: Partial<Record<"church" | "church_dalt" | "museu_roma" | "museu_estampacio" | "fabrica_lio" | "vallpremia" | "frigorifics" | "station" | "can_manent" | "can_sanpere" | "can_gravada" | "carrer_aurora" | "fundacio_crit", Pt>>;
+  pois: Partial<Record<"church" | "church_dalt" | "museu_roma" | "museu_estampacio" | "fabrica_lio" | "vallpremia" | "frigorifics" | "station" | "can_manent" | "can_sanpere" | "can_gravada" | "carrer_aurora" | "fundacio_crit" | "cami_mig" | "nucli_historic" | "cases_barates" | "caseta_aigues", Pt>>;
   chimneys: Pt[];
   attribution: string;
 }

@@ -334,6 +334,11 @@ export function createLandmarks(f: Features, ground: Ground): Landmarks {
   L("church", f.pois.church, 40, 1798, 3000, y => (y >= 1936.5 && y < 1939 ? t("label.church.ruin") : t("label.church")), "church");
   L("can_manent", f.pois.can_manent, 16, 1616, 3000, y => t(y >= 2026.37 ? "label.can_manent.festa" : "label.can_manent"), "can_manent");
   L("gas", f.pois.museu_estampacio, 22, 1884.1, 3000, y => (y >= 2002.3 ? t("label.gas.museum") : t("label.gas")), "gas");
+  L("cami_mig", f.pois.cami_mig, 12, -150, 3000, y => t(y < 476 ? "label.cami_mig.roman" : "label.cami_mig"), "cami_mig");
+  L("nucli_historic", f.pois.nucli_historic, 18, 1750, 3000, () => t("label.nucli_historic"), "nucli_historic");
+  L("riera", f.pois.frigorifics, 10, -9700, 3000, () => t("label.riera"), "riera");
+  L("cases_barates", f.pois.cases_barates, 12, 1922, 3000, () => t("label.cases_barates"), "cases_barates");
+  L("caseta_aigues", f.pois.caseta_aigues, 10, 1928, 3000, () => t("label.caseta_aigues"), "caseta_aigues");
   L("can_sanpere", f.pois.can_sanpere, 26, 1930, 3000, y => t(y >= 2025.9 ? "label.can_sanpere.works" : y >= 2013.3 ? "label.can_sanpere.social" : "label.can_sanpere"), "can_sanpere");
   L("can_gravada", f.pois.can_gravada, 14, 1908, 3000, () => t("label.can_gravada"), "can_gravada");
   L("aurora", f.pois.carrer_aurora, 10, 1898, 3000, () => t("label.aurora"), "aurora");
@@ -347,7 +352,7 @@ export function createLandmarks(f: Features, ground: Ground): Landmarks {
   L("villa", f.pois.museu_roma, 18, 250, 500, () => t("label.villa"));
   L("museu_roma", f.pois.museu_roma, 18, 2015, 3000, () => t("label.museu_roma"));
   L("vallpremia", f.pois.vallpremia, 14, -100, 100, () => t("label.vallpremia"));
-  L("frigorifics", f.pois.frigorifics, 12, -125, 30, () => t("label.frigorifics"));
+  L("frigorifics", f.pois.frigorifics, 22, -125, 30, () => t("label.frigorifics"));
 
   const api: Landmarks = {
     group,

@@ -8,9 +8,25 @@
   120.2,
   -490.6
  ],
- "_sources": "can_gravada: DIBA 58202 (41.48907, 2.35505); carrer_aurora: DIBA 58287 (41.49109, 2.35898); can_sanpere: DIBA 58375, UTM 446232 4593378",
+ "_sources": "can_gravada: DIBA 58202 (41.48907, 2.35505); carrer_aurora: DIBA 58287 (41.49109, 2.35898); can_sanpere: DIBA 58375, UTM 446232 4593378; cami_mig DIBA 58222, nucli_historic 58275, cases_barates 58210, caseta_aigues 58377 (lat/lon from the records)",
  "can_sanpere": [
   -139.0,
   -586.0
+ ],
+ "cami_mig": [
+  -953.3,
+  -539.2
+ ],
+ "nucli_historic": [
+  -22.2,
+  -667.2
+ ],
+ "cases_barates": [
+  523.8,
+  -551.4
+ ],
+ "caseta_aigues": [
+  -586.7,
+  -25.7
  ]
 }

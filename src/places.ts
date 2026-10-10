@@ -79,6 +79,41 @@ export const PLACES: Place[] = [
   },
 ];
 
+// Places added from the "Llocs d'interès" list (Terra, aigua i racons, 2019), positioned and dated
+// with the Diputació de Barcelona heritage records.
+PLACES.push(
+  {
+    id: "cami_mig", poi: "cami_mig", from: -150, to: 3000,
+    sources: ["camiMig", "camiMigCajal", "camiMigMontserrat", "magdalena", "estimada"],
+    events: [
+      { year: -100, key: "roman", estimate: true }, { year: 1941, key: "magdalena" }, { year: 1970, key: "mosaic" },
+      { year: 1979, key: "finds" }, { year: 2010, key: "bcil" },
+    ],
+  },
+  {
+    id: "nucli_historic", poi: "nucli_historic", from: 1700, to: 3000, sources: ["nucli", "pratRiba", "rectoria", "estimada"],
+    events: [
+      { year: 1750, key: "guild", estimate: true }, { year: 1861, key: "plan" }, { year: 1920.7, key: "pratriba" },
+      { year: 1928, key: "water" }, { year: 1939, key: "franco", estimate: true }, { year: 2000.95, key: "facades" }, { year: 2010, key: "poum" },
+    ],
+  },
+  {
+    id: "riera", poi: "frigorifics", from: -9700, to: 3000, sources: ["frigorifics", "nucli", "rieraColl", "estimada"],
+    events: [
+      { year: -4000, key: "neolithic", estimate: true }, { year: 1900, key: "streets", estimate: true },
+      { year: 1998.3, key: "edificiMar" }, { year: 1999, key: "excavation" },
+    ],
+  },
+  {
+    id: "cases_barates", poi: "cases_barates", from: 1922, to: 3000, sources: ["casesBarates"],
+    events: [{ year: 1922, key: "built", estimate: true }, { year: 2010, key: "bcil" }],
+  },
+  {
+    id: "caseta_aigues", poi: "caseta_aigues", from: 1928, to: 3000, sources: ["aigues", "nucli"],
+    events: [{ year: 1928, key: "dosrius" }],
+  },
+);
+
 export const placeById = (id: string): Place | undefined => PLACES.find(p => p.id === id);
 
 export function placesIn(from: number, to: number, pois: Record<string, Pt | undefined>): Place[] {
