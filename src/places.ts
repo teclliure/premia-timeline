@@ -15,7 +15,13 @@ export interface Place {
   to: number;
   events: PlaceEvent[];
   sources: SourceId[];
+  /** The place no longer stands; sources give no date, so it is marked as gone from GONE_FROM on. */
+  gone?: boolean;
 }
+
+/** Start of the "Avui" era: places marked `gone` are labelled as disappeared from here on. */
+export const GONE_FROM = 2000;
+export const isGone = (p: Place | undefined, year: number): boolean => !!p?.gone && year >= GONE_FROM;
 
 export const PLACES: Place[] = [
   {
@@ -45,7 +51,9 @@ export const PLACES: Place[] = [
     ],
   },
   {
-    id: "can_sanpere", poi: "can_sanpere", from: 1842, to: 3000,
+    id: "can_sanpere", poi: "can_sanpere", from: 1850, to: 3000,
+    // 1842 (Genís Mayolas, weaver) is kept as an event, but no source puts him on this site; the
+    // Penjaculpes gives 1850 as the founding year, so the place is listed from 1850.
     sources: ["sanpere", "mayolas", "penjaculpes", "sanpereAssoc", "sanpereDirecta", "sanpereCapgros"],
     events: [
       { year: 1842, key: "mayolas" }, { year: 1850, key: "looms1850" }, { year: 1862, key: "dye" },
@@ -75,7 +83,7 @@ export const PLACES: Place[] = [
     id: "church", poi: "church", from: 1798, to: 3000, sources: ["church", "rectoria"],
     events: [
       { year: 1798, key: "stone" }, { year: 1820.5, key: "mass" }, { year: 1841, key: "parish" },
-      { year: 1854, key: "done" }, { year: 1936.5, key: "burned", estimate: true }, { year: 1939, key: "rebuild" },
+      { year: 1854, key: "done", estimate: true }, { year: 1936.5, key: "burned", estimate: true }, { year: 1939, key: "rebuild" },
     ],
   },
 ];
@@ -119,27 +127,29 @@ PLACES.push(
 // are geocoded from the streets the page gives, so they are approximate.
 PLACES.push(
   {
-    id: "vapor_vell", poi: "vapor_vell", from: 1863, to: 3000, sources: ["penjaculpes"],
+    id: "vapor_vell", poi: "vapor_vell", from: 1863, to: 3000, sources: ["penjaculpes"], gone: true,
     events: [{ year: 1863, key: "founded" }],
   },
   {
-    id: "foneria_roura", poi: "foneria_roura", from: 1881, to: 3000, sources: ["penjaculpes"],
+    id: "foneria_roura", poi: "foneria_roura", from: 1881, to: 3000, sources: ["penjaculpes"], gone: true,
     events: [{ year: 1881, key: "founded" }],
   },
   {
-    id: "can_galindo", poi: "can_galindo", from: 1840, to: 3000, sources: ["penjaculpes"],
-    events: [{ year: 1840, key: "founded" }],
+    // The Penjaculpes says 1840, but a tyre and rubber factory in 1840 is implausible and Les
+    // Sintètiques (1940) was set up to research rubber for Can Galindo: most likely 1940.
+    id: "can_galindo", poi: "can_galindo", from: 1940, to: 3000, sources: ["penjaculpes"], gone: true,
+    events: [{ year: 1940, key: "founded", estimate: true }],
   },
   {
-    id: "ca_lescoda", poi: "ca_lescoda", from: 1940, to: 3000, sources: ["penjaculpes"],
+    id: "ca_lescoda", poi: "ca_lescoda", from: 1940, to: 3000, sources: ["penjaculpes"], gone: true,
     events: [{ year: 1940, key: "sintetiques" }],
   },
   {
-    id: "carboniques_pujol", poi: "carboniques_pujol", from: 1900, to: 3000, sources: ["penjaculpes"],
+    id: "carboniques_pujol", poi: "carboniques_pujol", from: 1900, to: 3000, sources: ["penjaculpes"], gone: true,
     events: [{ year: 1900, key: "founded", estimate: true }],
   },
   {
-    id: "salvador_simo", poi: "salvador_simo", from: 1936, to: 3000, sources: ["penjaculpes"],
+    id: "salvador_simo", poi: "salvador_simo", from: 1936, to: 3000, sources: ["penjaculpes"], gone: true,
     events: [{ year: 1936, key: "founded" }],
   },
 );
@@ -159,7 +169,9 @@ PLACES.push(
     events: [{ year: 1626, key: "first" }, { year: 1888, key: "telegraf" }],
   },
   {
-    id: "escola_assis", poi: "escola_assis", from: 1888, to: 3000, sources: ["assis"],
+    // Until the order bought this site (1902; building finished 1905) the school was at Sant
+    // Cristòfol, 35, so the place is listed here from 1902; the earlier events stay on the card.
+    id: "escola_assis", poi: "escola_assis", from: 1902, to: 3000, sources: ["assis"],
     events: [{ year: 1887.98, key: "comissio" }, { year: 1888, key: "monges" }, { year: 1902, key: "terreny" }, { year: 1905, key: "edifici" }],
   },
   {
@@ -180,7 +192,7 @@ PLACES.push(
   },
   {
     id: "can_soler_cortada", poi: "can_soler_cortada", from: 1900, to: 3000, sources: ["solerCortada", "alcaldes"],
-    events: [{ year: 1936.79, key: "ajuntament" }],
+    events: [{ year: 1900, key: "built", estimate: true }, { year: 1936.79, key: "ajuntament" }],
   },
   {
     id: "bunquers", poi: "bunker_port", from: 1937, to: 3000, sources: ["bunkerPort", "bunkerAgulles", "mapa"],

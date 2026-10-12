@@ -255,7 +255,7 @@
   "place.church.e.stone": "Primera pedra de l'ermita",
   "place.church.e.mass": "Primera missa (10 de juliol)",
   "place.church.e.parish": "Parròquia independent de Sant Pere de Premià",
-  "place.church.e.done": "S'acaba l'església",
+  "place.church.e.done": "S'acaba l'ampliació de l'església (data no confirmada per la fitxa del patrimoni)",
   "place.church.e.burned": "Cremada i enderrocada a mà (Guerra Civil)",
   "place.church.e.rebuild": "Comença la reconstrucció",
   "ms.manent1618": "Primera menció documental de Can Manent",
@@ -361,7 +361,7 @@
   "place.can_galindo.title": "Can Galindo",
   "place.can_galindo.subtitle": "Cautxú: pneumàtics i gomes",
   "place.can_galindo.text": "Galindo Indústries Químicas del Caucho, S.A., entre els carrers Indústria i Jaume Balmes. Transformava el cautxú en pneumàtics per a vehicles, gomes elàstiques i altres productes, i tenia el seu propi equip ciclista. Té el seu Penjaculpes a la Festa Major d'Hivern. Ubicació aproximada; la font no en dona la data de tancament.",
-  "place.can_galindo.e.founded": "Any de creació segons el Penjaculpes",
+  "place.can_galindo.e.founded": "Any de creació probable. El Penjaculpes diu 1840, però una fàbrica de pneumàtics el 1840 és molt improbable i Les Sintètiques (1940) es va crear per a Can Galindo",
   "place.ca_lescoda.title": "Ca l'Escoda",
   "place.ca_lescoda.subtitle": "Del cautxú al coure i a les peces de motor; avui, l'Ajuntament",
   "place.ca_lescoda.text": "Entre els carrers Unió i Esperança, on avui hi ha l'Ajuntament. Va començar com a Les Sintètiques, investigant el cautxú per a Can Galindo; després va trefilar coure per fer fil elèctric i, finalment, com a Escoda, va fabricar peces per a motors, bicicletes i maquinària. Té el seu Penjaculpes a la Festa Major d'Hivern. La font no data els canvis d'activitat ni el tancament.",
@@ -500,5 +500,8 @@
   "ms.platges2023": "Regeneració de les platges",
   "ms.temporal2026": "Temporal: estació tancada",
   "ui.morePlaces": "i {n} més…",
-  "ui.fewerPlaces": "Mostrar-ne menys"
+  "ui.fewerPlaces": "Mostrar-ne menys",
+  "label.gone": "{name} (desaparegut)",
+  "place.goneNote": "Avui ja no existeix. Les fonts no en donen la data de tancament o d'enderroc.",
+  "place.can_soler_cortada.e.built": "Casa d'estiueig del segle XX (la fitxa no en dona l'any)"
 }
