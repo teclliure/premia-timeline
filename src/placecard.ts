@@ -26,9 +26,7 @@ export function createPlaceCard(photos: Record<string, PlacePhoto>, onFly: (id: 
       root.innerHTML = `<div class="modal-card">
 <header><h2>${esc(t(`place.${id}.title`))}</h2><button class="close" aria-label="${esc(t("ui.close"))}">×</button></header>
 <p class="era-subtitle">${esc(t(`place.${id}.subtitle`))}</p>
-${ph ? `<figure><img src="${esc(ph.file)}" alt="${esc(ph.title)}"><figcaption>${esc(ph.title)}${ph.year ? ` · ${ph.year}` : ""} · ${esc(t("gallery.author"))}: ${esc(ph.author)} ·
-  ${ph.licence_url ? `<a href="${esc(ph.licence_url)}" target="_blank" rel="noopener">${esc(ph.licence)}</a>` : esc(ph.licence)} ·
-  <a href="${esc(ph.source_url)}" target="_blank" rel="noopener">${esc(t("gallery.source"))}</a></figcaption></figure>`
+${ph ? `<figure class="ph"></figure>${ph.more?.length ? `<div class="thumbs">${[ph, ...ph.more].map((x, i) => `<button data-i="${i}" class="${i ? "" : "on"}"><img src="${esc(x.thumb)}" alt="" loading="lazy"></button>`).join("")}</div>` : ""}`
     : `<p class="empty">${esc(t("ui.noPhoto"))}</p>`}
 <p>${esc(t(`place.${id}.text`))}</p>
 ${isGone(p, year) ? `<p class="warn">${esc(t("place.goneNote"))}</p>` : ""}
@@ -38,6 +36,18 @@ ${isGone(p, year) ? `<p class="warn">${esc(t("place.goneNote"))}</p>` : ""}
 <ul class="sources">${p.sources.map(s => `<li><a href="${esc(SOURCES[s].url)}" target="_blank" rel="noopener">${esc(SOURCES[s].title)}</a></li>`).join("")}</ul>
 <div class="card-actions"><button class="fly">${esc(t("ui.flyTo"))}</button><button class="contact-place">${esc(t("contact.place"))}</button></div>
 </div>`;
+      const all = ph ? [ph, ...(ph.more ?? [])] : [];
+      const showPhoto = (i: number) => {
+        const x = all[i];
+        const fig = root.querySelector(".ph");
+        if (!x || !fig) return;
+        fig.innerHTML = `<img src="${esc(x.file)}" alt="${esc(x.title)}"><figcaption>${esc(x.title)}${x.year ? ` · ${x.year}` : ""} · ${esc(t("gallery.author"))}: ${esc(x.author)} ·
+  ${x.licence_url ? `<a href="${esc(x.licence_url)}" target="_blank" rel="noopener">${esc(x.licence)}</a>` : esc(x.licence)} ·
+  <a href="${esc(x.source_url)}" target="_blank" rel="noopener">${esc(t("gallery.source"))}</a></figcaption>`;
+        root.querySelectorAll<HTMLButtonElement>(".thumbs button").forEach(b => b.classList.toggle("on", Number(b.dataset.i) === i));
+      };
+      showPhoto(0);
+      root.querySelectorAll<HTMLButtonElement>(".thumbs button").forEach(b => b.addEventListener("click", () => showPhoto(Number(b.dataset.i))));
       root.querySelector(".close")!.addEventListener("click", () => { root.hidden = true; });
       root.querySelector(".fly")!.addEventListener("click", () => { root.hidden = true; onFly(id); });
       root.querySelector(".contact-place")!.addEventListener("click", () => { root.hidden = true; onContact(id, t(`place.${id}.title`)); });

@@ -200,8 +200,25 @@ PLACES.push(
   },
 );
 
+// Port de Premià (research pass 2026-10; breakwaters traced in scripts/port_manual.json).
+PLACES.push({
+  id: "port", poi: "port", from: 1971.45, to: 3000,
+  sources: ["port", "portGencat", "portNubiola", "portEspais", "port2004", "port2006", "port2009", "port2010", "port2015", "port2016",
+    "port2018", "portClau", "port2021", "port2023", "port2024", "port2024b", "port2025", "torrassa2026"],
+  events: [
+    { year: 1971.45, key: "ordre" }, { year: 1972.97, key: "fase2" }, { year: 1974, key: "inaug" }, { year: 1980, key: "generalitat" },
+    { year: 1986.17, key: "temporal86" }, { year: 1991.3, key: "ampliacio" }, { year: 1993, key: "aturada" }, { year: 1997.85, key: "platja97" },
+    { year: 2001.47, key: "pla2001" }, { year: 2004.67, key: "acord2004" }, { year: 2005, key: "anulat" }, { year: 2006.3, key: "dragat" },
+    { year: 2007.87, key: "marina" }, { year: 2009.3, key: "costas" }, { year: 2010.55, key: "pla2010" }, { year: 2010.78, key: "temporal2010" },
+    { year: 2011.53, key: "prorroga" }, { year: 2012, key: "transvasament" }, { year: 2015.54, key: "comercial" }, { year: 2016.2, key: "pedra" },
+    { year: 2018.51, key: "zona" }, { year: 2021.05, key: "espigons" }, { year: 2023.45, key: "estabilitzacio" }, { year: 2024.35, key: "venda" },
+    { year: 2025.46, key: "polivalent" }, { year: 2026.72, key: "torrassa" },
+  ],
+});
+
 export const placeById = (id: string): Place | undefined => PLACES.find(p => p.id === id);
 
-export function placesIn(from: number, to: number, pois: Record<string, Pt | undefined>): Place[] {
-  return PLACES.filter(p => pois[p.poi] && p.from < to && p.to > from);
+/** Places that exist in the given year (not the whole era: an era can span centuries). */
+export function placesIn(year: number, pois: Record<string, Pt | undefined>): Place[] {
+  return PLACES.filter(p => pois[p.poi] && p.from <= year && year < p.to);
 }

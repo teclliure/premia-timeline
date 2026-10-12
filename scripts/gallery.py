@@ -103,6 +103,11 @@ PLACE_QUERIES = {
 }
 
 
+# Extra photos for a place card, from a Commons category (freely licensed only, newest last).
+PLACE_CATEGORIES = {"port": "Category:Port of Premià"}
+MAX_EXTRA = 8
+
+
 def search_files(q: str) -> list[str]:
     r = S.get(API, params={"action": "query", "list": "search", "srsearch": q, "srnamespace": 6, "srlimit": 10,
                            "format": "json"}, timeout=60).json()
@@ -134,6 +139,30 @@ def place_images() -> None:
             break
         else:
             print("place", pid, "no freely licensed photo found")
+    for pid, cat in PLACE_CATEGORIES.items():
+        extra = []
+        titles = [t_ for c in walk(cat, 1) for t_ in members(c)]
+        for f in info(sorted(set(titles))):
+            meta = f.get("extmetadata", {})
+            lic = strip(meta.get("LicenseShortName", {}).get("value", ""))
+            if not OK.match(lic) or not f.get("thumburl") or f["title"].lower().endswith((".svg", ".pdf", ".tif", ".tiff")):
+                continue
+            if pid in out and f["descriptionurl"] == out[pid]["source_url"]:
+                continue
+            img = Image.open(io.BytesIO(S.get(f["thumburl"], timeout=120).content)).convert("RGB")
+            file, thumb = save(img, f"place_{pid}_{len(extra)}")
+            extra.append({"title": strip(meta.get("ObjectName", {}).get("value", "")) or f["title"][5:],
+                          "author": strip(meta.get("Artist", {}).get("value", "")) or "desconegut",
+                          "licence": lic, "licence_url": strip(meta.get("LicenseUrl", {}).get("value", "")),
+                          "source_url": f["descriptionurl"], "file": file, "thumb": thumb, "year": year_from(meta)})
+            if len(extra) >= MAX_EXTRA:
+                break
+        extra.sort(key=lambda e: e["year"] or 9999)
+        print("place", pid, "extra photos", len(extra), "from", cat)
+        if extra:
+            if pid not in out:
+                out[pid] = extra.pop(0)
+            out[pid]["more"] = extra
     (aoi.DATA / "places.json").write_text(json.dumps(out, ensure_ascii=False, indent=1))
 
 

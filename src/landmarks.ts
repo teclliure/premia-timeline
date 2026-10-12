@@ -148,18 +148,7 @@ export function createLandmarks(f: Features, ground: Ground): Landmarks {
   train.add(trainStripe);
   group.add(train);
 
-  // --- port breakwaters (built 1972–1975). When OSM maps the port only as a harbour area, its
-  // seaward edges stand in for the breakwater.
-  if (!f.lines.breakwater.length && f.areas.harbour[0]) {
-    const ring = f.areas.harbour[0];
-    let cur: Pt[] = [];
-    for (let i = 0; i < ring.length; i++) {
-      const a = ring[i], b = ring[(i + 1) % ring.length];
-      if (ground.height((a[0] + b[0]) / 2, (a[1] + b[1]) / 2) < 0.3) { if (!cur.length) cur.push(a); cur.push(b); }
-      else if (cur.length) { f.lines.breakwater.push(cur); cur = []; }
-    }
-    if (cur.length) f.lines.breakwater.push(cur);
-  }
+  // --- port breakwaters (built 1972–1975), traced over the current orthophoto (scripts/port_manual.json).
   const bwMat = lamb(0x9a968c);
   const breakwaters = f.lines.breakwater.map(line => {
     const len = lineLength(line);
@@ -358,7 +347,7 @@ export function createLandmarks(f: Features, ground: Ground): Landmarks {
   if (rail.length) L("railway", pointAt(rail, railLen * 0.72).p, 10, 1848.8, 3000, () => t("label.railway"));
   if (f.lines.n2[0]) L("n2", pointAt(f.lines.n2[0], lineLength(f.lines.n2[0]) * 0.3).p, 8, 1500, 3000, y => (y >= 1950 ? t("label.n2.modern") : t("label.n2")));
   if (f.lines.c32[0]) L("c32", pointAt(f.lines.c32[0], lineLength(f.lines.c32[0]) * 0.55).p, 10, 1969, 3000, () => t("label.c32"));
-  if (f.lines.breakwater[0]) L("port", pointAt(f.lines.breakwater[0], lineLength(f.lines.breakwater[0]) * 0.6).p, 12, 1974, 3000, () => t("label.port"));
+  if (f.lines.breakwater[0]) L("port", pointAt(f.lines.breakwater[0], lineLength(f.lines.breakwater[0]) * 0.6).p, 12, 1974, 3000, () => t("label.port"), "port");
   L("fabrica_lio", f.pois.fabrica_lio, 38, 1898, 3000, () => t("label.fabrica_lio"), "fabrica_lio");
   L("villa", f.pois.museu_roma, 18, 250, 500, () => t("label.villa"));
   L("museu_roma", f.pois.museu_roma, 18, 2015, 3000, () => t("label.museu_roma"));

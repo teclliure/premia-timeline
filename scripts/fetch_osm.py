@@ -177,6 +177,9 @@ def main() -> None:
             if key not in pois and centre and any(n in name for n in needles):
                 pois[key] = centre
     pois = enrich(pois, headers)
+    port = aoi.ROOT / "scripts/port_manual.json"
+    if not lines["breakwater"] and port.exists():  # OSM has only the harbour area: use the traced breakwaters
+        lines["breakwater"] = json.loads(port.read_text())["breakwater"]
     out = {"lines": lines, "areas": areas, "pois": pois, "chimneys": chimneys,
            "attribution": "© OpenStreetMap contributors, ODbL"}
     aoi.DATA.mkdir(parents=True, exist_ok=True)

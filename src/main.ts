@@ -155,7 +155,7 @@ async function main() {
     buildings.setYear(year, playing ? Math.max(yearsPerStep(year, 0.006) * 1.5, 1) : 0.001);
     trees.setYear(year);
     landmarks.setYear(year);
-    ui.setYear({ places: placesIn(eraAt(year).from, eraAt(year).to, pois).map(p => p.id), year, seaLevel: level, coastKm: coastDistanceKm(level), photo: photo.photo, partial: photo.partial, census: censusBefore(year), galleryCount: gallery.countFor(year) });
+    ui.setYear({ places: placesIn(year, pois).map(p => p.id), year, seaLevel: level, coastKm: coastDistanceKm(level), photo: photo.photo, partial: photo.partial, census: censusBefore(year), galleryCount: gallery.countFor(year) });
     scheduleHash();
     shadowsDirty = dirty = true;
   }
