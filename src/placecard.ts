@@ -2,7 +2,7 @@
 // the ones already past at the current year highlighted, sources, and a button to fly there.
 import type { PlacePhoto } from "./data";
 import { t } from "./i18n";
-import { placeById } from "./places";
+import { isGone, placeById } from "./places";
 import { SOURCES, formatYear } from "./timeline";
 
 const esc = (s: string) => s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
@@ -31,6 +31,7 @@ ${ph ? `<figure><img src="${esc(ph.file)}" alt="${esc(ph.title)}"><figcaption>${
   <a href="${esc(ph.source_url)}" target="_blank" rel="noopener">${esc(t("gallery.source"))}</a></figcaption></figure>`
     : `<p class="empty">${esc(t("ui.noPhoto"))}</p>`}
 <p>${esc(t(`place.${id}.text`))}</p>
+${isGone(p, year) ? `<p class="warn">${esc(t("place.goneNote"))}</p>` : ""}
 <h3>${esc(t("ui.history"))}</h3>
 <ol class="events">${p.events.map(e => `<li class="${e.year <= year ? "past" : ""}"><b>${e.estimate ? t("year.approx") + " " : ""}${esc(formatYear(Math.floor(e.year)))}</b> ${esc(t(`place.${id}.e.${e.key}`))}</li>`).join("")}</ol>
 <h3>${esc(t("ui.sources"))}</h3>

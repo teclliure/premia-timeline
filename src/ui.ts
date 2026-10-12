@@ -1,6 +1,7 @@
 // Time bar, era card, camera / view buttons, scene controls and the "Notes i fonts" panel.
 import { t, formatNumber } from "./i18n";
 import { ERAS, MILESTONES, NOW, SOURCES, eraAt, formatYear, posAt, type Era } from "./timeline";
+import { isGone, placeById } from "./places";
 import { VIEW_IDS, type Mode, type ViewId } from "./camera";
 
 export interface UIHandlers {
@@ -207,7 +208,7 @@ ${ph ? `<p class="warn">${esc(t("notes.placeholder"))}</p>` : ""}
         lastPlaces = placesKey;
         const box = q<HTMLDivElement>(".places");
         const LIMIT = 8;
-        const btn = (id: string, extra: boolean) => `<button data-place="${id}"${extra ? ' class="extra"' : ""}>${esc(t(`place.${id}.title`))}</button>`;
+        const btn = (id: string, extra: boolean) => `<button data-place="${id}"${extra ? ' class="extra"' : ""}>${esc(isGone(placeById(id), info.year) ? t("label.gone", { name: t(`place.${id}.title`) }) : t(`place.${id}.title`))}</button>`;
         const more = info.places.length - LIMIT;
         box.innerHTML = info.places.length
           ? `<h4>${esc(t("ui.places"))} (${info.places.length})</h4>${info.places.map((id, i) => btn(id, i >= LIMIT)).join("")}${more > 0 ? `<button class="more-places">${esc(t("ui.morePlaces", { n: more }))}</button>` : ""}`

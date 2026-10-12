@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { elevation, type Features, type Pt } from "./data";
 import type { Ground } from "./ground";
 import { t } from "./i18n";
+import { GONE_FROM, isGone, placeById } from "./places";
 
 export interface Label { key: string; at: Pt; lift: number; from: number; to: number; text: (year: number) => string; place?: string; el?: HTMLElement }
 
@@ -339,14 +340,16 @@ export function createLandmarks(f: Features, ground: Ground): Landmarks {
   L("riera", f.pois.frigorifics, 10, -9700, 3000, () => t("label.riera"), "riera");
   L("cases_barates", f.pois.cases_barates, 12, 1922, 3000, () => t("label.cases_barates"), "cases_barates");
   L("caseta_aigues", f.pois.caseta_aigues, 10, 1928, 3000, () => t("label.caseta_aigues"), "caseta_aigues");
-  for (const [id, from, poi] of [["sant_pere", 898, "church_dalt"], ["can_batlle", 1626, "can_batlle"], ["escola_assis", 1888, "escola_assis"],
+  for (const [id, from, poi] of [["sant_pere", 898, "church_dalt"], ["can_batlle", 1626, "can_batlle"], ["escola_assis", 1902, "escola_assis"],
     ["amistat", 1892, "amistat"], ["can_tous", 1902, "can_tous"], ["la_salle", 1906.7, "la_salle"], ["coop_unio", 1928, "coop_unio"],
     ["can_soler_cortada", 1936.79, "can_soler_cortada"], ["bunquers", 1937, "bunker_port"], ["bunquers", 1937, "bunker_agulles"]] as Array<[string, number, string]>) {
-    L(`${id}_${poi}`, f.pois[poi], 12, from, 3000, () => t(`label.${id}`), id);
+    // The port bunker is buried under the port works; the canvi d'agulles ones still stand.
+    const buried = poi === "bunker_port";
+    L(`${id}_${poi}`, f.pois[poi], 12, from, 3000, y => (buried && y >= GONE_FROM ? t("label.gone", { name: t(`label.${id}`) }) : t(`label.${id}`)), id);
   }
-  for (const [id, from] of [["vapor_vell", 1863], ["foneria_roura", 1881], ["can_galindo", 1840], ["ca_lescoda", 1940],
+  for (const [id, from] of [["vapor_vell", 1863], ["foneria_roura", 1881], ["can_galindo", 1940], ["ca_lescoda", 1940],
     ["carboniques_pujol", 1900], ["salvador_simo", 1936]] as Array<[string, number]>) {
-    L(id, f.pois[id], 14, from, 3000, () => t(`place.${id}.title`), id);
+    L(id, f.pois[id], 14, from, 3000, y => (isGone(placeById(id), y) ? t("label.gone", { name: t(`place.${id}.title`) }) : t(`place.${id}.title`)), id);
   }
   L("can_sanpere", f.pois.can_sanpere, 26, 1930, 3000, y => t(y >= 2025.9 ? "label.can_sanpere.works" : y >= 2013.3 ? "label.can_sanpere.social" : "label.can_sanpere"), "can_sanpere");
   L("can_gravada", f.pois.can_gravada, 14, 1908, 3000, () => t("label.can_gravada"), "can_gravada");
