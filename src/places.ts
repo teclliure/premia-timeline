@@ -144,6 +144,50 @@ PLACES.push(
   },
 );
 
+// Places from the 2026-10 research pass (Diputació de Barcelona records; positions from their lat/lon).
+PLACES.push(
+  {
+    id: "sant_pere", poi: "church_dalt", from: 898, to: 3000, sources: ["catromCastell", "gimferrer", "gecDalt", "catromSantPere", "campaners"],
+    events: [
+      { year: 898, key: "tower" }, { year: 927, key: "vila" }, { year: 966.97, key: "church" }, { year: 1054, key: "tomas" },
+      { year: 1358, key: "focs" }, { year: 1380, key: "crisi", estimate: true }, { year: 1379, key: "ruina" }, { year: 1471, key: "burriac" },
+      { year: 1480, key: "reialenc" }, { year: 1582, key: "llinda" }, { year: 1588, key: "gotica", estimate: true }, { year: 1713, key: "cisa" },
+    ],
+  },
+  {
+    id: "can_batlle", poi: "can_batlle", from: 1626, to: 3000, sources: ["canBatlle"],
+    events: [{ year: 1626, key: "first" }, { year: 1888, key: "telegraf" }],
+  },
+  {
+    id: "escola_assis", poi: "escola_assis", from: 1888, to: 3000, sources: ["assis"],
+    events: [{ year: 1887.98, key: "comissio" }, { year: 1888, key: "monges" }, { year: 1902, key: "terreny" }, { year: 1905, key: "edifici" }],
+  },
+  {
+    id: "amistat", poi: "amistat", from: 1892, to: 3000, sources: ["amistat", "amistatSala"],
+    events: [{ year: 1892, key: "fundacio" }, { year: 1902, key: "cafe" }, { year: 1906, key: "sala" }, { year: 1916, key: "biblioteca" }, { year: 1966, key: "cinema" }],
+  },
+  {
+    id: "can_tous", poi: "can_tous", from: 1902, to: 3000, sources: ["canTous"],
+    events: [{ year: 1902, key: "pisos" }],
+  },
+  {
+    id: "la_salle", poi: "la_salle", from: 1906.7, to: 3000, sources: ["laSalle"],
+    events: [{ year: 1906.73, key: "germans" }, { year: 1907, key: "planols" }, { year: 1908.55, key: "noviciat" }, { year: 1909.57, key: "setmana" }],
+  },
+  {
+    id: "coop_unio", poi: "coop_unio", from: 1928, to: 3000, sources: ["coopUnio"],
+    events: [{ year: 1928, key: "edifici" }],
+  },
+  {
+    id: "can_soler_cortada", poi: "can_soler_cortada", from: 1900, to: 3000, sources: ["solerCortada", "alcaldes"],
+    events: [{ year: 1936.79, key: "ajuntament" }],
+  },
+  {
+    id: "bunquers", poi: "bunker_port", from: 1937, to: 3000, sources: ["bunkerPort", "bunkerAgulles", "mapa"],
+    events: [{ year: 1937, key: "construccio" }, { year: 1939.3, key: "guardia", estimate: true }],
+  },
+);
+
 export const placeById = (id: string): Place | undefined => PLACES.find(p => p.id === id);
 
 export function placesIn(from: number, to: number, pois: Record<string, Pt | undefined>): Place[] {

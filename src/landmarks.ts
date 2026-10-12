@@ -339,6 +339,11 @@ export function createLandmarks(f: Features, ground: Ground): Landmarks {
   L("riera", f.pois.frigorifics, 10, -9700, 3000, () => t("label.riera"), "riera");
   L("cases_barates", f.pois.cases_barates, 12, 1922, 3000, () => t("label.cases_barates"), "cases_barates");
   L("caseta_aigues", f.pois.caseta_aigues, 10, 1928, 3000, () => t("label.caseta_aigues"), "caseta_aigues");
+  for (const [id, from, poi] of [["sant_pere", 898, "church_dalt"], ["can_batlle", 1626, "can_batlle"], ["escola_assis", 1888, "escola_assis"],
+    ["amistat", 1892, "amistat"], ["can_tous", 1902, "can_tous"], ["la_salle", 1906.7, "la_salle"], ["coop_unio", 1928, "coop_unio"],
+    ["can_soler_cortada", 1936.79, "can_soler_cortada"], ["bunquers", 1937, "bunker_port"], ["bunquers", 1937, "bunker_agulles"]] as Array<[string, number, string]>) {
+    L(`${id}_${poi}`, f.pois[poi], 12, from, 3000, () => t(`label.${id}`), id);
+  }
   for (const [id, from] of [["vapor_vell", 1863], ["foneria_roura", 1881], ["can_galindo", 1840], ["ca_lescoda", 1940],
     ["carboniques_pujol", 1900], ["salvador_simo", 1936]] as Array<[string, number]>) {
     L(id, f.pois[id], 14, from, 3000, () => t(`place.${id}.title`), id);
@@ -346,7 +351,6 @@ export function createLandmarks(f: Features, ground: Ground): Landmarks {
   L("can_sanpere", f.pois.can_sanpere, 26, 1930, 3000, y => t(y >= 2025.9 ? "label.can_sanpere.works" : y >= 2013.3 ? "label.can_sanpere.social" : "label.can_sanpere"), "can_sanpere");
   L("can_gravada", f.pois.can_gravada, 14, 1908, 3000, () => t("label.can_gravada"), "can_gravada");
   L("aurora", f.pois.carrer_aurora, 10, 1898, 3000, () => t("label.aurora"), "aurora");
-  L("church_dalt", f.pois.church_dalt, 30, 1798, 3000, () => t("label.church_dalt"));
   L("station", f.pois.station, 12, 1848.8, 3000, () => t("label.station"));
   if (rail.length) L("railway", pointAt(rail, railLen * 0.72).p, 10, 1848.8, 3000, () => t("label.railway"));
   if (f.lines.n2[0]) L("n2", pointAt(f.lines.n2[0], lineLength(f.lines.n2[0]) * 0.3).p, 8, 1500, 3000, y => (y >= 1950 ? t("label.n2.modern") : t("label.n2")));

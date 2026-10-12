@@ -8,7 +8,7 @@
   120.2,
   -490.6
  ],
- "_sources": "can_gravada: DIBA 58202 (41.48907, 2.35505); carrer_aurora: DIBA 58287 (41.49109, 2.35898); can_sanpere: DIBA 58375, UTM 446232 4593378; cami_mig DIBA 58222, nucli_historic 58275, cases_barates 58210, caseta_aigues 58377 (lat/lon from the records); salvador_simo: lower c/ Eixample (Penjaculpes), placed at the DIBA 58288 point of c/ Eixample (approximate); frigorifics: DIBA 58252 (41.49475, 2.35761)",
+ "_sources": "can_gravada: DIBA 58202 (41.48907, 2.35505); carrer_aurora: DIBA 58287 (41.49109, 2.35898); can_sanpere: DIBA 58375, UTM 446232 4593378; cami_mig DIBA 58222, nucli_historic 58275, cases_barates 58210, caseta_aigues 58377 (lat/lon from the records); salvador_simo: lower c/ Eixample (Penjaculpes), placed at the DIBA 58288 point of c/ Eixample (approximate); frigorifics: DIBA 58252 (41.49475, 2.35761); can_batlle 58207, amistat 58328, coop_unio 58203, escola_assis 58195, la_salle 58200, can_soler_cortada 58345, bunker_port 58295, bunker_agulles 58294, can_tous 58201 (DIBA lat/lon)",
  "can_sanpere": [
   -139.0,
   -586.0
@@ -36,5 +36,41 @@
  "frigorifics": [
   8.9,
   -83.5
+ ],
+ "can_batlle": [
+  -88.1,
+  -775.5
+ ],
+ "amistat": [
+  136.9,
+  -605.1
+ ],
+ "coop_unio": [
+  70.7,
+  -522.5
+ ],
+ "escola_assis": [
+  -111.3,
+  -525.6
+ ],
+ "la_salle": [
+  -609.3,
+  -810.5
+ ],
+ "can_soler_cortada": [
+  188.2,
+  -669.9
+ ],
+ "bunker_port": [
+  556.2,
+  -581.6
+ ],
+ "bunker_agulles": [
+  -436.0,
+  -970.6
+ ],
+ "can_tous": [
+  22.3,
+  -745.3
  ]
 }

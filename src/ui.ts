@@ -206,8 +206,18 @@ ${ph ? `<p class="warn">${esc(t("notes.placeholder"))}</p>` : ""}
       if (placesKey !== lastPlaces) {
         lastPlaces = placesKey;
         const box = q<HTMLDivElement>(".places");
-        box.innerHTML = info.places.length ? `<h4>${esc(t("ui.places"))}</h4>${info.places.map(id => `<button data-place="${id}">${esc(t(`place.${id}.title`))}</button>`).join("")}` : "";
+        const LIMIT = 8;
+        const btn = (id: string, extra: boolean) => `<button data-place="${id}"${extra ? ' class="extra"' : ""}>${esc(t(`place.${id}.title`))}</button>`;
+        const more = info.places.length - LIMIT;
+        box.innerHTML = info.places.length
+          ? `<h4>${esc(t("ui.places"))} (${info.places.length})</h4>${info.places.map((id, i) => btn(id, i >= LIMIT)).join("")}${more > 0 ? `<button class="more-places">${esc(t("ui.morePlaces", { n: more }))}</button>` : ""}`
+          : "";
+        box.classList.remove("all");
         box.querySelectorAll<HTMLButtonElement>("[data-place]").forEach(b => b.addEventListener("click", () => h.onPlace(b.dataset.place!)));
+        box.querySelector(".more-places")?.addEventListener("click", e => {
+          const all = box.classList.toggle("all");
+          (e.currentTarget as HTMLButtonElement).textContent = all ? t("ui.fewerPlaces") : t("ui.morePlaces", { n: more });
+        });
       }
       status.textContent = info.photo ? t("ui.photoBlend", { photo: info.partial ? `${info.photo} (${t("ui.estimate")})` : info.photo }) : t("ui.photoNone");
       q(".gallery-btn").textContent = `${t("ui.gallery")} (${info.galleryCount})`;
