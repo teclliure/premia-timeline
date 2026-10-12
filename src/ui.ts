@@ -1,7 +1,7 @@
 // Time bar, era card, camera / view buttons, scene controls and the "Notes i fonts" panel.
 import { t, formatNumber } from "./i18n";
 import { ERAS, MILESTONES, NOW, SOURCES, eraAt, formatYear, posAt, type Era } from "./timeline";
-import { isGone, placeById } from "./places";
+import { GONE_FROM, isGone, placeById } from "./places";
 import { VIEW_IDS, type Mode, type ViewId } from "./camera";
 
 export interface UIHandlers {
@@ -203,7 +203,8 @@ ${ph ? `<p class="warn">${esc(t("notes.placeholder"))}</p>` : ""}
       if (info.seaLevel < -0.5) facts.push(esc(t("ui.seaLevel", { value: formatNumber(info.seaLevel, 0) })));
       if (info.coastKm !== null && info.coastKm > 0.3) facts.push(esc(t("ui.coastOffshore", { km: formatNumber(info.coastKm, 1) })) + ` <small>(${esc(t("ui.estimate"))})</small>`);
       q(".facts").innerHTML = facts.map(f => `<span>${f}</span>`).join("");
-      const placesKey = info.places.join(",");
+      // Include whether gone places are past GONE_FROM: Port and Avui list the same ids, only the labels differ.
+      const placesKey = info.places.join(",") + (info.year >= GONE_FROM ? "|gone" : "");
       if (placesKey !== lastPlaces) {
         lastPlaces = placesKey;
         const box = q<HTMLDivElement>(".places");
